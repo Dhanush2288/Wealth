@@ -7,6 +7,7 @@ import Registercomponent from '../components/pages/register.vue'
 import ClientIndexhome from '../components/pages/Client/dashboard.vue'
 import RmIndexhome from '../components/pages/Rm/dashboard.vue'
 import CreatorIndexhome from '../components/pages/Creator/dashboard.vue'
+import NoAuth from '../components/pages/404.vue'
 
 import store from '../store'
 
@@ -51,7 +52,7 @@ const routes =[
     },
     {
         path:'/notauth',
-        component:Registercomponent
+        component:NoAuth
     }
 ]
 

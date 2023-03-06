@@ -1,12 +1,12 @@
-  <template>
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-lg-7">
+<template>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-lg-7">
 
-            </div>
-            <div class="col-lg-5">
-                <div class="contact">
-    <form class="uploadsign" id="file-form">
+      </div>
+      <div class="col-lg-5">
+        <div class="contact">
+          <form class="uploadsign" id="file-form">
       <div class="form-floating mb-3">
         <input
           type="text"
@@ -72,12 +72,11 @@
       </div>
       <button @click.prevent="saveForm" type="submit" class="btn btn-dark">Register</button>
     </form>
-  </div>
-            </div>
+
         </div>
+      </div>
     </div>
-
-
+  </div>
 </template>
 <script>
 export default {
@@ -98,7 +97,7 @@ export default {
       axios
         .post("/api/register", this.form)
         .then(() => {
-            this.$router.push({ name: "Login"});
+          this.$router.push({ name: "Login" });
         })
         .catch((error) => {
           this.errors = error.response.data.errors;
