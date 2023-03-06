@@ -20,8 +20,7 @@ const routes =[
     {
         path:'/home',
         component:ClientIndexhome,
-        meta: { requiresAuth: true, requiresClient: true }
-
+ 
     },
     {
         path:'/manager',
