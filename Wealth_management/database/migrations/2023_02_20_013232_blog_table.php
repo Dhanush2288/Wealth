@@ -15,7 +15,9 @@ return new class extends Migration
     {
         Schema::create('blog', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('crator_id');
+            $table->unsignedBigInteger('creator_id')->nullable();
+            $table->unsignedBigInteger('manager_id')->nullable();
+
             $table->text('title');
             $table->text('abstract');
             $table->text('content');
@@ -27,7 +29,8 @@ return new class extends Migration
             $table->json('minor_id')->nullable();
             $table->json('region_id')->nullable();
             $table->json('country_id')->nullable();
-            $table->unsignedBigInteger('manager_id');
+            $table->foreign('manager_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('creator_id')->references('id')->on('users')->onDelete('cascade');
             $table->integer('status')->default(0);
             $table->integer('isdeleted')->default(0);
             $table->dateTime('expiry_at');

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Registration Page</title>
+	<style>
+		body 
+        {
+			background-image: url('Images/loginbackground.jpg');
+			background-size: cover;
+			background-position: center;
+			font-family: Arial, sans-serif;
+		}
+		form 
+        {
+			background-color: white;
+			border: 1px solid #ccc;
+			padding: 20px;
+			margin: 50px auto;
+			max-width: 400px;
+			width: 100%;
+			box-sizing: border-box;
+		}
+		label 
+        {
+			display: block;
+			margin-bottom: 8px;
+			font-weight: bold;
+		}
+		input[type="text"],
+        input[type="password"] 
+        {
+			padding: 8px;
+			width: 100%;
+			border: 1px solid #ccc;
+			border-radius: 4px;
+			box-sizing: border-box;
+			margin-bottom: 16px;
+		}
+        select {
+            padding: 8px;
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            margin-bottom: 16px;
+        }
+		input[type="submit"] 
+        {
+			background-color: #4CAF50;
+			color: white;
+			padding: 12px 20px;
+			border: none;
+			border-radius: 4px;
+			cursor: pointer;
+		}
+		input[type="submit"]:hover 
+        {
+			background-color: #45a049;
+		}
+	</style>
+</head>
+<body>
+	<form>
+		<label for="email">Email:</label>
+		<input type="text" id="email" name="email" placeholder="Enter your email">
+
+	<label for="password">Password:</label>
+	<input type="password" id="password" name="password" placeholder="Enter your password">
+
+	<label for="confirm-password">Confirm Password:</label>
+	<input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm your password">
+
+	<label for="role">Role:</label>
+	<select id="role" name="role">
+		<option value="teacher">Client</option>
+		<option value="student">RM</option>
+		<option value="parent">Admin</option>
+	</select>
+
+	<input type="submit" value="Register">
+</form>
+</body>
+</html>
+
+
