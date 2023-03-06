@@ -17,7 +17,6 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('creator_id')->nullable();
             $table->unsignedBigInteger('manager_id')->nullable();
-
             $table->text('title');
             $table->text('abstract');
             $table->text('content');
