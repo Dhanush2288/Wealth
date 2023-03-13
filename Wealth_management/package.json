@@ -14,7 +14,18 @@
         "vue-loader": "^17.0.1"
     },
     "dependencies": {
+        "@fortawesome/fontawesome-svg-core": "^6.3.0",
+        "@fortawesome/free-brands-svg-icons": "^6.3.0",
+        "@fortawesome/free-regular-svg-icons": "^6.3.0",
+        "@fortawesome/free-solid-svg-icons": "^6.3.0",
+        "@fortawesome/vue-fontawesome": "^3.0.3",
+        "@vuepic/vue-datepicker": "^4.2.0",
+        "datatables.net-select": "^1.6.2",
+        "datatables.net-vue3": "^2.1.0",
         "vue": "^3.2.36",
+        "vue-easytable": "^2.24.0",
+        "vue-good-table": "^2.21.11",
+        "vue-multiselect": "^3.0.0-beta.1",
         "vue-router": "^4.0.13",
         "vuex": "^4.0.2"
     }

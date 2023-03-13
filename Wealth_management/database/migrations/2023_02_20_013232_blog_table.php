@@ -28,7 +28,7 @@ return new class extends Migration
             $table->json('minor_id')->nullable();
             $table->json('region_id')->nullable();
             $table->json('country_id')->nullable();
-            $table->foreign('manager_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('manager_id')->references('id')->on('users');
             $table->foreign('creator_id')->references('id')->on('users')->onDelete('cascade');
             $table->integer('status')->default(0);
             $table->integer('isdeleted')->default(0);
