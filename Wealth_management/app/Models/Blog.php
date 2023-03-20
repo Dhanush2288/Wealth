@@ -10,6 +10,8 @@ use Laravel\Sanctum\HasApiTokens;
 
 class Blog extends Authenticatable
 {
+    protected $table="blog";
+
     use HasApiTokens, HasFactory, Notifiable;
 
     /**
@@ -29,6 +31,9 @@ class Blog extends Authenticatable
         'minor_id',
         'region_id',
         'country_id',
+        'content',
+        'currency_id',
+        'expiry_at'
     ];
 
 }

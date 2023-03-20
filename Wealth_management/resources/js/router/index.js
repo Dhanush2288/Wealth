@@ -8,6 +8,7 @@ import ClientIndexhome from '../components/pages/Client/dashboard.vue'
 import RmIndexhome from '../components/pages/Rm/dashboard.vue'
 import CreatorIndexhome from '../components/pages/Creator/dashboard.vue'
 import Createblog from '../components/pages/Creator/create.vue'
+import Profileblog from '../components/pages/Creator/profile.vue'
 
 import NoAuth from '../components/pages/404.vue'
 
@@ -43,6 +44,12 @@ const routes =[
         component:Createblog,
         meta: { requiresAuth: true, requiresCreator: true },
         name:'create_blog'
+    },
+    {
+        path:'/creatorprofile',
+        component:Profileblog,
+        meta: { requiresAuth: true, requiresCreator: true },
+        name:'creatorprofile'
     },
     {
         path:'/',

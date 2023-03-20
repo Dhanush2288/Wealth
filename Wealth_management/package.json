@@ -22,6 +22,7 @@
         "@vuepic/vue-datepicker": "^4.2.0",
         "datatables.net-select": "^1.6.2",
         "datatables.net-vue3": "^2.1.0",
+        "sweetalert2": "^11.7.3",
         "vue": "^3.2.36",
         "vue-easytable": "^2.24.0",
         "vue-good-table": "^2.21.11",

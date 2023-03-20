@@ -5,7 +5,7 @@
 
       <nav class="navabar">
         <ul class="nav-links">
-          <li class="dashboard ">
+          <li class="dashboard">
             <a @click="$router.push('/creator')">
               <font-awesome-icon icon="fa-solid fa-house" />
               <span class="textspan"> Dashboard </span>
@@ -18,13 +18,13 @@
             </a>
           </li>
           <li class="dashboard">
-            <a >
+            <a>
               <font-awesome-icon icon="fa-solid fa-users" />
               <span class="textspan"> Rms profiles </span>
             </a>
           </li>
           <li class="dashboard">
-            <a >
+            <a>
               <font-awesome-icon icon=" fa-solid fa-user" />
               <span class="textspan"> Profile </span>
             </a>
@@ -67,8 +67,6 @@
                 id="floatingTextarea"
                 style="height: 70px"
                 v-model="form.abstract"
-
-
               ></textarea>
               <label for="floatingInput">Abstract</label>
             </div>
@@ -78,27 +76,30 @@
                 placeholder="Leave a comment here"
                 id="floatingTextarea"
                 style="height: 200px"
-                v-model="form.Content"
-
+                v-model="form.content"
               ></textarea>
               <label for="floatingInput">Content</label>
             </div>
-            <div style="display: flex; justify-content: space-between ;margin-bottom: 20px;">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 20px;
+              "
+            >
               <div class="muldiv">
                 <label class="typo__label">Product Tags</label>
                 <div class="oi">
-                    <multiselect
-                  v-model="Productvalue"
-                  :options="Productoptions"
-                  :multiple="true"
-                  :preserve-search="true"
-                  placeholder="Products"
-                  label="name"
-                  track-by="id"
-                >
-                </multiselect>
-
-
+                  <multiselect
+                    v-model="Productvalue"
+                    :options="Productoptions"
+                    :multiple="true"
+                    :preserve-search="true"
+                    placeholder="Products"
+                    label="name"
+                    track-by="id"
+                  >
+                  </multiselect>
                 </div>
               </div>
               <div class="muldiv">
@@ -115,7 +116,13 @@
                 </multiselect>
               </div>
             </div>
-            <div style="display: flex; justify-content: space-between ;margin-bottom: 20px;">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 20px;
+              "
+            >
               <div class="muldiv">
                 <label class="typo__label">Country</label>
                 <multiselect
@@ -143,7 +150,13 @@
                 </multiselect>
               </div>
             </div>
-            <div style="display: flex; justify-content: space-between;margin-bottom: 20px;">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 20px;
+              "
+            >
               <div class="muldiv">
                 <label class="typo__label">Risk</label>
                 <multiselect
@@ -153,21 +166,26 @@
                   placeholder="risk"
                   label="name"
                   track-by="name"
-
                 >
                 </multiselect>
               </div>
               <div class="muldiv">
                 <label class="typo__label">expiry date</label>
-                <VueDatePicker v-model="form.expiry_at" placeholder="Start Typing ..." text-input />
-
+                <VueDatePicker
+                  v-model="form.expiry_at"
+                  placeholder="Start Typing ..."
+                  text-input
+                />
               </div>
             </div>
           </form>
           <div>
-            <button class="btn  btn-dark   m-3" @click="Savepublish(true)"> Publish</button>
-            <button class="btn  btn-dark   m-3" @click="Savepublish(false)"> Save Draft</button>
-
+            <button class="btn btn-dark m-3" @click="Savepublish(true)">
+              Publish
+            </button>
+            <button class="btn btn-dark m-3" @click="Savepublish(false)">
+              Save Draft
+            </button>
           </div>
         </div>
       </div>
@@ -177,24 +195,25 @@
     <script>
 import Select from "datatables.net-select";
 import Multiselect from "vue-multiselect";
-import VueDatePicker from '@vuepic/vue-datepicker';
-import '@vuepic/vue-datepicker/dist/main.css'
+import VueDatePicker from "@vuepic/vue-datepicker";
+import "@vuepic/vue-datepicker/dist/main.css";
+import Swal from "sweetalert2";
 
 export default {
   components: {
     Multiselect,
-    VueDatePicker
+    VueDatePicker,
   },
   data() {
     return {
-        form:{
-            title:'',
-            abstract:"",
-            risk:"",
-            creator_id:"",
-            Content:'',
-            expiry_at:null
-        },
+      form: {
+        title: "",
+        abstract: "",
+        risk: "",
+        creator_id: "",
+        content: "",
+        expiry_at: null,
+      },
       Productvalue: [],
       Productoptions: [
         { name: "Equity", id: "1" },
@@ -276,34 +295,58 @@ export default {
       ],
     };
   },
-  methods:{
-    Savepublish(a){
+  methods: {
+    Savepublish(a) {
+      console.log(this.form);
+      const utcDate1 = new Date(this.form.expiry_at)
+        .toISOString()
+        .replace("T", " ")
+        .replace("Z", "");
+      this.form.product_id = JSON.stringify(
+        this.Productvalue.map((a) => Number(a.id))
+      );
+      this.form.currency_id = JSON.stringify(
+        this.Currencyvalue.map((a) => Number(a.id))
+      );
+      this.form.region_id = JSON.stringify(
+        this.Countryvalue.map((a) => Number(a.id))
+      );
+      this.form.country_id = JSON.stringify(
+        this.Regionvalue.map((a) => Number(a.id))
+      );
+      this.form.risk = this.Riskvalue.name;
+      this.form.creator_id = 3;
+      this.form.expiry_at = utcDate1;
+      console.log(this.form);
+      axios.post("/api/createblog", this.form).then((res) => {
+        this.form
         console.log(this.form);
-        const utcDate1 = new Date(this.form.expiry_at);
-        utcDate1.toISOString();
-        this.form.product_id= JSON.stringify( this.Productvalue.map(a => a.id))
-        this.form.currency_id=JSON.stringify(this.Currencyvalue.map(a => a.id))
-        this.form.region_id=JSON.stringify(this.Countryvalue.map(a => a.id))
-        this.form.country_id=JSON.stringify(this.Regionvalue.map(a => a.id))
-        this.form.risk=this.Riskvalue.name;
-        this.form.creator_id=3
-        this.form.expiry_at=utcDate1
-        axios
-        .post("/api/createblog", this.form)
-        .then((res) => {
-            console.log(this.form);
+        const Toast = Swal.mixin({
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          didOpen: (toast) => {
+            toast.addEventListener("mouseenter", Swal.stopTimer);
+            toast.addEventListener("mouseleave", Swal.resumeTimer);
+          },
+        });
 
-        })
-    }
-  }
+        Toast.fire({
+          icon: "success",
+          title: "Signed in successfully",
+        });
+      });
+    },
+  },
 };
 </script>
     <style scoped>
 .muldiv {
   width: 45%;
 }
-.oi{
-
+.oi {
 }
 .nav-links {
   margin-top: 10vh;

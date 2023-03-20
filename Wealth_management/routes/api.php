@@ -4,6 +4,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\BLogController;
+use App\Http\Controllers\API\Projectcontroller;
+
 
 
 /*
@@ -26,6 +28,11 @@ Route::post('login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->post('createrole', [AuthController::class, 'createrole']);
 Route::post('createblog', [BLogController::class, 'createblog']);
 Route::post('getblogs', [BLogController::class, 'getall']);
+Route::post('createproduct', [Projectcontroller::class, 'createproduct']);
+Route::post('createcountry', [Projectcontroller::class, 'createcountry']);
+Route::post('createregion', [Projectcontroller::class, 'createregion']);
+
+
 
 
 
