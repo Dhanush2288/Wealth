@@ -96,11 +96,11 @@ export default {
             console.log(user.usertype);
             if (user.usertype === "Manager") {
               redirectTo = { name: "manager" };
-            } else if (user.usertype === "admin") {
+            } else if (user.usertype === "Admin") {
               redirectTo = { name: "admin" };
-            } else if (user.usertype === "creator") {
+            } else if (user.usertype === "Creator") {
               redirectTo = { name: "creator" };
-            } else if (user.usertype === "client") {
+            } else if (user.usertype === "Client") {
               redirectTo = { name: "client" };
             }
             console.log(redirectTo);

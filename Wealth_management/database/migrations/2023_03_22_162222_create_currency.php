@@ -13,10 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('blog_taggers', function (Blueprint $table) {
+        Schema::create('currency', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('blog_id')->nullable();
-            $table->unsignedBigInteger('blog_tag_id')->nullable();
+            $table->string('name');
+            $table->unsignedBigInteger('createdby_id')->nullable();
+            $table->integer('status')->default(0);
+            $table->integer('isdeleted')->default(0);
             $table->timestamps();
         });
     }
@@ -28,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('blog_taggers');
+        Schema::dropIfExists('currency');
     }
 };

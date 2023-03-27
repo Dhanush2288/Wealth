@@ -59,8 +59,8 @@
               <select class="form-select" aria-label="Default select example" v-model="form.role_id">
                 <option selected> Select Role</option>
                 <option value="4">Client</option>
-                <option value="2">Creator</option>
-                <option value="1">Manager</option>
+                <option value="3">Creator</option>
+                <option value="2">Manager</option>
               </select>
               <div class="invalid-feedback">
                 Please enter a message in the textarea.

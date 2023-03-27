@@ -1,42 +1,7 @@
 <template>
   <div>
     <div class="w3-sidebar sidenav w3-bar-block" style="width: 17%">
-      <div class="logo">LOGO</div>
-
-      <nav class="navabar">
-        <ul class="nav-links">
-          <li class="dashboard">
-            <a @click="$router.push('/creator')">
-              <font-awesome-icon icon="fa-solid fa-house" />
-              <span class="textspan"> Dashboard </span>
-            </a>
-          </li>
-          <li class="dashboard active1">
-            <a @click="$router.push('/createblog')">
-              <font-awesome-icon icon="fa-solid fa-building" />
-              <span class="textspan"> Blogs </span>
-            </a>
-          </li>
-          <li class="dashboard">
-            <a>
-              <font-awesome-icon icon="fa-solid fa-users" />
-              <span class="textspan"> Rms profiles </span>
-            </a>
-          </li>
-          <li class="dashboard">
-            <a>
-              <font-awesome-icon icon=" fa-solid fa-user" />
-              <span class="textspan"> Profile </span>
-            </a>
-          </li>
-          <!-- <li class="dashboard">
-                <a href="http://localhost:4000/contact">
-                  <i class="fa fa-phone"></i>
-                  <span class="textspan"> Contact us </span></a
-                >
-              </li> -->
-        </ul>
-      </nav>
+      <Nav></Nav>
     </div>
     <!-- Page Content -->
     <div style="margin-left: 17%">
@@ -47,7 +12,7 @@
         </div>
       </div>
       <div class="blogcre">
-        <h1>Create Blog</h1>
+        <h1>View Blog</h1>
         <div class="blog">
           <form class="uploadsign" id="file-form">
             <div class="form-floating mb-3">
@@ -91,6 +56,7 @@
                 <label class="typo__label">Product Tags</label>
                 <div class="oi">
                   <multiselect
+
                     v-model="Productvalue"
                     :options="Productoptions"
                     :preserve-search="true"
@@ -171,7 +137,7 @@
                   class="form-control"
                   id="floatingInput"
                   placeholder="Max value"
-                  v-model="form.maxvalue"
+                  v-model="form.maxrange"
                 />
                 <label for="floatingInput">Max value</label>
               </div>
@@ -200,7 +166,7 @@
     ></custom-modal>
   </div>
 </template>
-    <script>
+      <script>
 import Select from "datatables.net-select";
 import Multiselect from "vue-multiselect";
 import VueDatePicker from "@vuepic/vue-datepicker";
@@ -208,18 +174,19 @@ import "@vuepic/vue-datepicker/dist/main.css";
 import Swal from "sweetalert2";
 import $ from "jquery";
 import CustomModal from "./as.vue";
+import Nav from "../reuseable/nav.vue";
 
 export default {
   components: {
     Multiselect,
     VueDatePicker,
     CustomModal,
+    Nav,
   },
   data() {
     return {
-      modalTitle: "Modal Title",
-      modalMessage: "This is the modal message.",
-      showModalFlag: false,
+      ideas: null,
+      itemId: null,
       form: {
         title: "",
         abstract: "",
@@ -227,8 +194,9 @@ export default {
         creator_id: "",
         content: "",
         expiry_at: null,
+        maxrange: null,
       },
-      Productvalue: [],
+      Productvalue: null,
       Productoptions: [
         { name: "Equity", id: "1" },
         { name: "BOnd", id: "2" },
@@ -257,12 +225,12 @@ export default {
         { name: "UK", id: "2" },
         { name: "US", id: "2" },
       ],
-
     };
   },
   methods: {
     po() {
-      this.$refs.customModal.showModal();
+        console.log(this.Productvalue);
+    //   this.$refs.customModal.showModal();
     },
     handleMessage(message) {
       const utcDate1 = new Date(this.form.expiry_at)
@@ -332,17 +300,45 @@ export default {
             toast.addEventListener("mouseleave", Swal.resumeTimer);
           },
         });
-this.$router.push("/creator ")
+
         Toast.fire({
           icon: "success",
           title: "created in successfully",
         });
       });
     },
+    getblogdetail(id) {
+      var form = {
+        blog_id: id,
+      };
+      axios.post("/api/getblogs", form).then((res) => {
+        if (res.status == 200) {
+          this.ideas = res.data.data[0];
+          this.form.title = this.ideas.title;
+          this.form.abstract = this.ideas.abstract;
+          this.form.risk = this.ideas.risk;
+          this.form.creator_id = this.ideas.creator_id;
+          this.form.content = this.ideas.content;
+          this.form.expiry_at = this.ideas.expiry_at;
+          this.form.maxrange = this.ideas.maxrange;
+          this.Productvalue = this.Productoptions.find(option => option.id == this.ideas.product_id);
+          this.Currencyvalue  =  this.Currencyoptions.find(option => option.id == this.ideas.currency_id);
+          this.Regionvalue  = this.Regionoptions.find(option => option.id == this.ideas.region_id );
+          this.Countryvalue  =   this.Countryoptions.find(option => option.id == this.ideas.country_id);
+          this.Riskvalue = this.Riskoptions.find(option => option.id == this.ideas.risk)
+          console.log(this.Riskvalue);
+
+        }
+      });
+    },
+  },
+  mounted() {
+    this.itemId = this.$route.params.id;
+    this.getblogdetail(this.itemId);
   },
 };
 </script>
-    <style scoped>
+      <style scoped>
 .muldiv {
   width: 45%;
 }
@@ -450,4 +446,4 @@ this.$router.push("/creator ")
   margin-top: 30px;
 }
 </style>
-    <style src="vue-multiselect/dist/vue-multiselect.css"></style>
+      <style src="vue-multiselect/dist/vue-multiselect.css"></style>

@@ -57,12 +57,10 @@ class Projectcontroller extends Controller
         ];
         return response()->json($response, 200);
     }
-
     public function createregion(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'type'=>'required'
 
         ]);
         if ($validator->fails()) {
@@ -73,14 +71,37 @@ class Projectcontroller extends Controller
             return response()->json($response, 400);
         }
         $input = $request->all();
-        $user = DB::table('blog_tag')->insert($input);
+        $user = DB::table('region')->insert($input);
         $response = [
             'success' => true,
             'data' => $user,
-            'message' => "regions created successfully",
+            'message' => "region created successfully",
             'df'=>$input
         ];
         return response()->json($response, 200);
     }
 
+    public function createcurrency(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+
+        ]);
+        if ($validator->fails()) {
+            $response = [
+                'success' => false,
+                'message' => $validator->errors()
+            ];
+            return response()->json($response, 400);
+        }
+        $input = $request->all();
+        $user = DB::table('currency')->insert($input);
+        $response = [
+            'success' => true,
+            'data' => $user,
+            'message' => "currency created successfully",
+            'df'=>$input
+        ];
+        return response()->json($response, 200);
+    }
 }

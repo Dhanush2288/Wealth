@@ -48,11 +48,11 @@ class Authcontroller extends Controller
     {
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
             $user = $request->user();
-            $success=DB::table('users')
-            ->join('roles', 'users.role_id', '=', 'roles.id')
-            ->select('users.id', 'users.name', 'users.email','roles.name as usertype')
-            ->where('users.id',$user->id)
-            ->get();
+            $success = DB::table('users')
+                ->join('roles', 'users.role_id', '=', 'roles.id')
+                ->select('users.id', 'users.name', 'users.email', 'roles.name as usertype')
+                ->where('users.id', $user->id)
+                ->get();
             $success['token'] = $user->createToken('MyApp')->plainTextToken;
             $response = [
                 'success' => true,
@@ -60,12 +60,11 @@ class Authcontroller extends Controller
                 'message' => "User register successfully"
             ];
             return response()->json($response, 200);
-        }else{
-            $response=[
+        } else {
+            $response = [
                 'success' => false,
             ];
             return response()->json($response, 400);
-
         }
     }
     public function createrole(Request $request)
@@ -89,6 +88,25 @@ class Authcontroller extends Controller
             'success' => true,
             'data' => $success,
             'message' => "role created successfully"
+        ];
+        return response()->json($response, 200);
+    }
+    public function userall(Request $request)
+    {
+        $where = [];
+        if ($request->input("roleid")) {
+            $where[] = ['users.role_id', '=', $request->input("roleid")];
+        }
+        $success = DB::table('users')
+            ->leftjoin('roles', 'roles.id', '=', 'users.role_id')
+            ->where($where)
+            ->select('users.name', 'users.created_at','users.email','users.id','users.role_id','users.company','users.poistion','roles.name as role_name',  )
+
+            ->get();
+         $response = [
+            'success' => true,
+            'data' => $success,
+            'message' => "User register successfully"
         ];
         return response()->json($response, 200);
     }

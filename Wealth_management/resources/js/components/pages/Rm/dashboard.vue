@@ -6,25 +6,25 @@
       <nav class="navabar">
         <ul class="nav-links">
           <li class="dashboard active1">
-            <a @click="$router.push('/register')">
+            <a @click="$router.push('/manager')">
               <font-awesome-icon icon="fa-solid fa-house" />
               <span class="textspan"> Dashboard </span>
             </a>
           </li>
           <li class="dashboard">
-            <a @click="$router.push('/register')">
+            <a @click="$router.push('/assigned')">
               <font-awesome-icon icon="fa-solid fa-building" />
               <span class="textspan"> Assigned </span>
             </a>
           </li>
           <li class="dashboard">
-            <a @click="$router.push('/register')">
+            <a @click="$router.push('/Clentregister')">
               <font-awesome-icon icon="fa-solid fa-users" />
               <span class="textspan"> Clent profiles </span>
             </a>
           </li>
           <li class="dashboard">
-            <a @click="$router.push('/register')">
+            <a @click="$router.push('/myprofile')">
               <font-awesome-icon icon=" fa-solid fa-user" />
               <span class="textspan"> Profile </span>
             </a>
@@ -75,6 +75,7 @@
             >
             </multiselect>
           </div>
+
           <div class="muldiv2">
             <label class="typo__label">Risk</label>
             <multiselect
@@ -88,20 +89,18 @@
             </multiselect>
           </div>
           <div class="muldiv">
-            <label class="typo__label">Country</label>
-            <multiselect
-              v-model="Countryvalue"
-              :options="Countryoptions"
-              :multiple="true"
-              :preserve-search="true"
-              placeholder="Country"
-              label="name"
-              track-by="name"
-            >
-            </multiselect>
+            <label class="typo__label">Date</label>
+            <VueDatePicker
+              v-model="form.startdate"
+              placeholder="Date"
+              text-input
+            />
           </div>
+
           <div class="muldiv1">
-            <Button class="btn btn-lg btn-dark w-100 mt-3"> Search</Button>
+            <Button class="btn btn-dark w-100 mt-4" @click="getblogs()">
+              Search</Button
+            >
           </div>
         </div>
         <div class="shadow p-3 bg-white rounded">
@@ -109,44 +108,62 @@
             <thead>
               <tr>
                 <th scope="col">#</th>
-                <th scope="col" style="width: 30%">Investment Idea</th>
+                <th scope="col" style="width: 25%">Investment Idea</th>
                 <th scope="col">Product</th>
+                <th scope="col">Max value</th>
+
                 <th scope="col">Risk</th>
-                <th scope="col">Date</th>
-                <th scope="col">Creator</th>
+                <th scope="col">Status</th>
+
+                <th scope="col" style="width: 5 %">Date</th>
                 <th scope="col">Action</th>
               </tr>
             </thead>
             <tbody>
-              <tr class="bor-f">
-                <th scope="row">1</th>
+              <tr
+                v-for="(value, index) in ideas"
+                class="bor-f"
+                v-bind:key="index"
+              >
+                <th scope="row">{{ index + 1 }}</th>
                 <td>
                   <div class="bio">
-                    <p class="Tit">Bitcoin Bump</p>
+                    <p class="Tit">{{ value.title }}</p>
                     <p class="Paraab">
-                      An abstract class can be considered as a blueprint for
-                      other classes.
+                      {{ value.abstract }}
                     </p>
                   </div>
                 </td>
                 <td class="align-middle prod-tag">
                   <div>
-                    <p class="badge badge-info">Equity</p>
-                    <p class="badge badge-info">Equity</p>
-                    <p class="badge badge-info">Equity</p>
-                    <p class="badge badge-info">Equity</p>
-                    <p class="badge badge-info">Equity</p>
+                    <p class="badge badge-info">{{ value.product_name }}</p>
                   </div>
                 </td>
-                <td class="align-middle"><button class="btn">5</button></td>
-                <td class="align-middle">@mdo</td>
-                <td class="align-middle">@mdo</td>
 
+                <td class="align-middle prod-tag">
+                  <div>
+                    <p class=" ">{{ value.maxrange }}</p>
+                  </div>
+                </td>
                 <td class="align-middle">
-                  <button class="btn btn-success mr-1">View</button>
-                  <button class="btn btn-danger">
-                    <font-awesome-icon icon=" fa-solid fa-trash" />
+                  <button class="btn">{{ value.risk }}</button>
+                </td>
+                <td class="align-middle prod-tag">
+                  <div>
+                    <button v-if="value.status == 1" class="active1">Assigned</button>
+                    <button v-if="value.status == 0">Draft</button>
+                  </div>
+                </td>
+                <td class="align-middle">{{ formatDate(value.created_at) }}</td>
+                <td class="align-middle">
+                  <button
+                    class="btn btn-success mr-1"
+                    @click="goToView(value.id)"
+                  >
+                    Assign
                   </button>
+
+
                 </td>
               </tr>
             </tbody>
@@ -156,16 +173,30 @@
     </div>
   </div>
 </template>
-<script>
+    <script>
 import Select from "datatables.net-select";
 import Multiselect from "vue-multiselect";
+import VueDatePicker from "@vuepic/vue-datepicker";
+import Swal from "sweetalert2";
 
 export default {
   components: {
     Multiselect,
+    VueDatePicker,
   },
   data() {
     return {
+      ideas: [],
+      form: {
+        product_id: "",
+        region_id: "",
+        currency_id: "",
+        creator_id: "",
+        country_id: "",
+        manager_id: "",
+        startdate: "",
+        risk: "",
+      },
       Productvalue: [],
       Productoptions: [
         { name: "Equity", id: "1" },
@@ -187,61 +218,80 @@ export default {
         { name: "UK", id: "2" },
         { name: "US", id: "2" },
       ],
-      columns: [
-        {
-          field: "",
-          key: "a",
-          title: "#",
-          align: "center",
-        },
-        { field: "name", key: "b", title: "Name", align: "center" },
-        { field: "date", key: "c", title: "Date", align: "left" },
-        { field: "hobby", key: "d", title: "Hobby", align: "left" },
-        { field: "address", key: "e", title: "Address", width: "" },
-      ],
-      rows: [
-        { id: 1, name: "John", age: 20, createdAt: "", score: 0.03343 },
-        {
-          id: 2,
-          name: "Jane",
-          age: 24,
-          createdAt: "2011-10-31",
-          score: 0.03343,
-        },
-        {
-          id: 3,
-          name: "Susan",
-          age: 16,
-          createdAt: "2011-10-30",
-          score: 0.03343,
-        },
-        {
-          id: 4,
-          name: "Chris",
-          age: 55,
-          createdAt: "2011-10-11",
-          score: 0.03343,
-        },
-        {
-          id: 5,
-          name: "Dan",
-          age: 40,
-          createdAt: "2011-10-21",
-          score: 0.03343,
-        },
-        {
-          id: 6,
-          name: "John",
-          age: 20,
-          createdAt: "2011-10-31",
-          score: 0.03343,
-        },
-      ],
     };
+  },
+  methods: {
+
+    goToView(id) {
+      this.$router.push(`/viewrm/${id}`);
+    },
+    formatDate(dateString) {
+      const date = new Date(dateString);
+      return date.toLocaleString();
+    },
+    deleteblog(id) {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          var form = {
+            blog_id: id,
+          };
+          axios.post("/api/deleteblog", form).then((res) => {
+            if (res.data.data == 1) {
+              Swal.fire("Deleted!", "Your blog has been deleted.", "success");
+            } else {
+              Swal.fire("something Worng!", "Danger");
+            }
+            this.getblogs();
+          });
+        }
+      });
+    },
+    getblogs() {
+      const utcDate1 = new Date()
+        .toISOString()
+        .replace("T", " ")
+        .replace("Z", "");
+      console.log(utcDate1);
+      this.form.product_id = this.Productvalue.map((a) => Number(a.id));
+
+      this.form.currency_id = this.Currencyvalue.map((a) => Number(a.id));
+      this.form.manager_id = 6
+
+      this.form.region_id = this.Countryvalue.map((a) => Number(a.id));
+      if (this.Riskvalue.length > 0) {
+        this.form.risk = this.Riskvalue[0].id;
+      }
+      axios.post("/api/getblogs", this.form).then((res) => {
+        if (res.status == 200) {
+          this.ideas = res.data.data;
+          console.log(this.ideas);
+        }
+
+        this.form;
+      });
+    },
+  },
+  mounted() {
+    let date = new Date(); // Create a new date object with the current date and time
+    date.setHours(0, 0, 0, 0); // Set the hours, minutes, seconds, and milliseconds to 0
+    console.log(date);
+    this.form.startdate = date.toISOString().replace("T", " ").replace("Z", "");
+    this.getblogs();
   },
 };
 </script>
-<style scoped>
+    <style scoped>
+.mr-1 {
+  margin-right: 10px;
+}
 .nav-links {
   margin-top: 10vh;
   display: block;
@@ -345,7 +395,7 @@ export default {
   background: #e7e2f8;
 }
 .muldiv {
-  width: 250px;
+  width: 200px;
 }
 .muldiv1 {
   width: 200px;
@@ -369,7 +419,7 @@ export default {
   border-bottom: 3px solid #d8d8d8;
 }
 .prod-tag {
-  width: 17%;
+  width: 10%;
 }
 .badge {
   background: black;
@@ -377,5 +427,5 @@ export default {
   margin-bottom: 0px;
 }
 </style>
-<style src="vue-multiselect/dist/vue-multiselect.css"></style>
+    <style src="vue-multiselect/dist/vue-multiselect.css"></style>
 

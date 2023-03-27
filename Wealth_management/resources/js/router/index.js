@@ -5,10 +5,17 @@ import Indexhome from '../components/pages/Admin/home.vue'
 import Logincomponent from '../components/pages/login.vue'
 import Registercomponent from '../components/pages/register.vue'
 import ClientIndexhome from '../components/pages/Client/dashboard.vue'
-import RmIndexhome from '../components/pages/Rm/dashboard.vue'
 import CreatorIndexhome from '../components/pages/Creator/dashboard.vue'
 import Createblog from '../components/pages/Creator/create.vue'
 import Profileblog from '../components/pages/Creator/profile.vue'
+import Nav from '../components/pages/reuseable/nav.vue'
+import Viewcreator from '../components/pages/Creator/viewcreator.vue'
+import Editcreator from '../components/pages/Creator/edit.vue'
+import viewallcreator from '../components/pages/Creator/viewallblogs.vue'
+
+//RM stuff
+import RmIndexhome from '../components/pages/Rm/dashboard.vue'
+import viewrm from '../components/pages/RM/viewrm.vue'
 
 import NoAuth from '../components/pages/404.vue'
 
@@ -67,7 +74,21 @@ const routes =[
     {
         path:'/notauth',
         component:NoAuth
-    }
+    },{
+        path:'/view/:id',
+        component:Viewcreator
+    },
+    {
+        path:'/edit/:id',
+        component:Editcreator
+    },
+    {
+        path:'/viewall',
+        component:viewallcreator
+    },{
+        path:'/viewrm/:id',
+        component:viewrm
+    },
 ]
 
 const router = createRouter({
@@ -88,15 +109,15 @@ router.beforeEach(async(to, from, next) => {
       return
     }
 
-    if (to.matched.some(record => record.meta.requiresAdmin) && users.usertype !== 'admin') {
+    if (to.matched.some(record => record.meta.requiresAdmin) && users.usertype !== 'Admin') {
       next({ path: '/notauth' })
       return
     }
-    if (to.matched.some(record => record.meta.requiresCreator) && users.usertype !== 'creator') {
+    if (to.matched.some(record => record.meta.requiresCreator) && users.usertype !== 'Creator') {
       next({ path: '/notauth' })
       return
     }
-    if (to.matched.some(record => record.meta.requiresClient) && users.usertype !== 'client') {
+    if (to.matched.some(record => record.meta.requiresClient) && users.usertype !== 'Client') {
       next({ path: '/notauth' })
       return
     }
