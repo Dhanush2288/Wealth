@@ -75,11 +75,29 @@
             >
             </multiselect>
           </div>
+          <div class="muldiv">
+            <label class="typo__label">Currency</label>
+            <multiselect
+              v-model="Currencyvalue"
+              :options="Currencyoptions"
+              :multiple="true"
+              :preserve-search="true"
+              placeholder="Currency"
+              label="name"
+              track-by="name"
+            >
+            </multiselect>
+          </div>
           <div class="muldiv1">
             <Button class="btn btn-lg btn-dark w-100 mt-3"> Search</Button>
           </div>
           <div class="muldiv1">
-            <Button class="btn btn-lg btn-dark w-100 mt-3" @click="$router.push('/createblog')"> Add blog</Button>
+            <Button
+              class="btn btn-lg btn-dark w-100 mt-3"
+              @click="$router.push('/createblog')"
+            >
+              Add blog</Button
+            >
           </div>
         </div>
         <div class="shadow p-3 bg-white rounded">
@@ -87,42 +105,63 @@
             <thead>
               <tr>
                 <th scope="col">#</th>
-                <th scope="col" style="width: 30%">Investment Idea</th>
+                <th scope="col" style="width: 25%">Investment Idea</th>
                 <th scope="col">Product</th>
+                <th scope="col">Currency</th>
+                <th scope="col">Country</th>
+                <th scope="col">Max value</th>
+
                 <th scope="col">Risk</th>
-                <th scope="col">Date</th>
-                 <th scope="col">Action</th>
+                <th scope="col" style="width: 12 %">Date</th>
+                <th scope="col">Action</th>
               </tr>
             </thead>
             <tbody>
-              <tr class="bor-f">
-                <th scope="row">1</th>
+              <tr
+                v-for="(value, index) in ideas"
+                class="bor-f"
+                v-bind:key="index"
+              >
+                <th scope="row">{{ index + 1 }}</th>
                 <td>
                   <div class="bio">
-                    <p class="Tit">Bitcoin Bump</p>
+                    <p class="Tit">{{ value.title }}</p>
                     <p class="Paraab">
-                      An abstract class can be considered as a blueprint for
-                      other classes.
+                      {{ value.abstract }}
                     </p>
                   </div>
                 </td>
                 <td class="align-middle prod-tag">
                   <div>
-                    <p class="badge badge-info">Equity</p>
-                    <p class="badge badge-info">Equity</p>
-                    <p class="badge badge-info">Equity</p>
-                    <p class="badge badge-info">Equity</p>
-                    <p class="badge badge-info">Equity</p>
+                    <p class="badge badge-info">{{ value.product_name }}</p>
                   </div>
                 </td>
-                <td class="align-middle"><button class="btn">5</button></td>
-                <td class="align-middle">4/4/22</td>
-                <td class="align-middle">sdf</td>
-
+                <td class="align-middle prod-tag">
+                  <div>
+                    <p class="badge badge-info">{{ value.currency_name }}</p>
+                  </div>
+                </td>
+                <td class="align-middle prod-tag">
+                  <div>
+                    <p class="badge badge-info">{{ value.country_name }}</p>
+                  </div>
+                </td>
+                <td class="align-middle prod-tag">
+                  <div>
+                    <p class="badge badge-info">{{ value.country_name }}</p>
+                  </div>
+                </td>
+                <td class="align-middle">
+                  <button class="btn">{{ value.risk }}</button>
+                </td>
+                <td class="align-middle">{{ value.created_at }}</td>
                 <td class="align-middle">
                   <button class="btn btn-success mr-1">View</button>
-                  <button class="btn btn-danger">
+                  <button class="btn btn-danger mr-1">
                     <font-awesome-icon icon=" fa-solid fa-trash" />
+                  </button>
+                  <button class="btn btn-danger">
+                    <font-awesome-icon icon=" fa-solid fa-edit" />
                   </button>
                 </td>
               </tr>
@@ -143,6 +182,17 @@ export default {
   },
   data() {
     return {
+      ideas: [],
+      form: {
+        product_id: "",
+        region_id: "",
+        currency_id: "",
+        creator_id: "",
+        country_id: "",
+        manager_id: "",
+        startdate: "",
+        risk:""
+      },
       Productvalue: [],
       Productoptions: [
         { name: "Equity", id: "1" },
@@ -164,61 +214,43 @@ export default {
         { name: "UK", id: "2" },
         { name: "US", id: "2" },
       ],
-      columns: [
-        {
-          field: "",
-          key: "a",
-          title: "#",
-          align: "center",
-        },
-        { field: "name", key: "b", title: "Name", align: "center" },
-        { field: "date", key: "c", title: "Date", align: "left" },
-        { field: "hobby", key: "d", title: "Hobby", align: "left" },
-        { field: "address", key: "e", title: "Address", width: "" },
-      ],
-      rows: [
-        { id: 1, name: "John", age: 20, createdAt: "", score: 0.03343 },
-        {
-          id: 2,
-          name: "Jane",
-          age: 24,
-          createdAt: "2011-10-31",
-          score: 0.03343,
-        },
-        {
-          id: 3,
-          name: "Susan",
-          age: 16,
-          createdAt: "2011-10-30",
-          score: 0.03343,
-        },
-        {
-          id: 4,
-          name: "Chris",
-          age: 55,
-          createdAt: "2011-10-11",
-          score: 0.03343,
-        },
-        {
-          id: 5,
-          name: "Dan",
-          age: 40,
-          createdAt: "2011-10-21",
-          score: 0.03343,
-        },
-        {
-          id: 6,
-          name: "John",
-          age: 20,
-          createdAt: "2011-10-31",
-          score: 0.03343,
-        },
-      ],
     };
+  },
+  methods: {
+    getblogs() {
+      const utcDate1 = new Date()
+        .toISOString()
+        .replace("T", " ")
+        .replace("Z", "");
+      console.log(utcDate1);
+      this.form.product_id = this.Productvalue.map((a) => Number(a.id));
+
+      this.form.currency_id = this.Currencyvalue.map((a) => Number(a.id));
+
+      this.form.region_id = this.Countryvalue.map((a) => Number(a.id));
+      if(this.Riskvalue.length>0){
+        this.form.risk = this.Riskvalue[0].id
+
+      }
+      axios.post("/api/getblogs", this.form).then((res) => {
+        if (res.status == 200) {
+          this.ideas = res.data.data;
+          console.log(this.ideas);
+        }
+
+        this.form;
+      });
+    },
+  },
+  mounted() {
+    this.getblogs();
   },
 };
 </script>
   <style scoped>
+.mr-1 {
+  margin-right: 10px;
+}
 .nav-links {
   margin-top: 10vh;
   display: block;
@@ -346,7 +378,7 @@ export default {
   border-bottom: 3px solid #d8d8d8;
 }
 .prod-tag {
-  width: 17%;
+  width: 10%;
 }
 .badge {
   background: black;
@@ -355,4 +387,3 @@ export default {
 }
 </style>
   <style src="vue-multiselect/dist/vue-multiselect.css"></style>
-
