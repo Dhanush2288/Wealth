@@ -40,6 +40,7 @@ Route::post('editblog', [BLogController::class, 'editblog']);
 Route::post('createproduct', [Projectcontroller::class, 'createproduct']);
 Route::post('createcountry', [Projectcontroller::class, 'createcountry']);
 Route::post('createregion', [Projectcontroller::class, 'createregion']);
+Route::post('createcurrency', [Projectcontroller::class, 'createcurrency']);
 
 Route::post('createassigned', [Assignedcontroller::class, 'createassigned']);
 Route::post('getassignedall', [Assignedcontroller::class, 'getassignedall']);
