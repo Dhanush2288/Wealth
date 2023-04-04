@@ -422,3 +422,117 @@ export default {
 </style>
     <style src="vue-multiselect/dist/vue-multiselect.css"></style>
 
+.nav-links a i {
+  font-size: 28px;
+  text-decoration: none;
+  padding-left: 10px;
+}
+.nav-links li {
+  margin-top: 20px;
+  margin-left: 5px;
+  list-style: none;
+  display: flex;
+  cursor: pointer;
+  padding: 10px;
+}
+.nav-links i {
+  font-size: 19px;
+  text-decoration: none;
+  padding-top: 5px;
+}
+.nav-links li:hover {
+  background: #e7e2f8;
+  color: #533f8f;
+  border-radius: 5px;
+  margin-right: 10px;
+}
+.nav-links li span:hover {
+  font-weight: 700;
+  color: #533f8f;
+}
+.active1 {
+  padding-bottom: 3px;
+  background: #e7e2f8;
+  color: #685998;
+  border-radius: 5px;
+  margin-right: 10px;
+}
+.active1 .textspan {
+  /* color: black; */
+  font-weight: 700;
+  color: #533f8f;
+}
+.sidenav {
+  background: #f4f4f8;
+}
+.logo {
+  font-weight: 700;
+  font-size: 35px;
+  font-family: "Poppins", sans-serif;
+  margin: 10px;
+}
+.as {
+  width: 52px;
+  border-radius: 66px;
+  height: 52px;
+}
+.profilee {
+  display: flex;
+  width: 264px;
+  float: right;
+  margin-top: 13px;
+}
+.topnav {
+  height: 73px;
+  background: #f4f4f8;
+}
+.h5sd {
+  display: inline;
+  margin: auto 5px;
+  font-size: 14px;
+  font-family: "Poppins";
+  font-weight: 600;
+}
+.bing {
+  height: calc(100vh - 163px);
+}
+.Clearr {
+  display: flex;
+  justify-content: space-evenly;
+  padding: 15px;
+  background: #e7e2f8;
+}
+.muldiv {
+  width: 200px;
+}
+.muldiv1 {
+  width: 200px;
+}
+.muldiv2 {
+  width: 115px;
+}
+.table > thead {
+  border-bottom: 3px solid #d8d8d8;
+}
+.bio p {
+  margin: 0px;
+}
+.Tit {
+  font-weight: 800;
+}
+.Paraab {
+  color: silver;
+}
+.bor-f {
+  border-bottom: 3px solid #d8d8d8;
+}
+.prod-tag {
+  width: 10%;
+}
+.badge {
+  background: black;
+  margin-right: 5px;
+  margin-bottom: 0px;
+}
+</style>
+    <style src="vue-multiselect/dist/vue-multiselect.css"></style>
