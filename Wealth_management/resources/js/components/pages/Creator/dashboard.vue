@@ -1,37 +1,7 @@
 <template>
   <div>
     <div class="w3-sidebar sidenav w3-bar-block" style="width: 17%">
-      <div class="logo">LOGO</div>
-
-      <nav class="navabar">
-        <ul class="nav-links">
-          <li class="dashboard active1">
-            <a @click="$router.push('/creator')">
-              <font-awesome-icon icon="fa-solid fa-house" />
-              <span class="textspan"> Dashboard </span>
-            </a>
-          </li>
-          <li class="dashboard">
-            <a @click="$router.push('/createblog')">
-              <font-awesome-icon icon="fa-solid fa-building" />
-              <span class="textspan"> Blogs </span>
-            </a>
-          </li>
-          <li class="dashboard">
-            <a @click="$router.push('/register')">
-              <font-awesome-icon icon="fa-solid fa-users" />
-              <span class="textspan"> Rms profiles </span>
-            </a>
-          </li>
-          <li class="dashboard">
-            <a @click="$router.push('/register')">
-              <font-awesome-icon icon=" fa-solid fa-user" />
-              <span class="textspan"> Profile </span>
-            </a>
-          </li>
-
-        </ul>
-      </nav>
+ <Nav></Nav>
     </div>
     <!-- Page Content -->
     <div style="margin-left: 17%">
@@ -125,7 +95,7 @@
                 </td>
                 <td class="align-middle prod-tag">
                   <div>
-                    <p class="badge badge-info">{{ value.product_name }}</p>
+                    <p class=" ">{{ value.product_name }}</p>
                   </div>
                 </td>
 
@@ -139,12 +109,13 @@
                 </td>
                 <td class="align-middle prod-tag">
                   <div>
-<button v-if="value.status==1" class="active1">
-    Published
-</button>
-<button  v-if="value.status==0"  class="active2">
-    Draft
-</button>                 </div>
+                    <button v-if="value.status == 1" class="active1">
+                      Published
+                    </button>
+                    <button v-if="value.status == 0" class="active2">
+                      Draft
+                    </button>
+                  </div>
                 </td>
                 <td class="align-middle">{{ formatDate(value.created_at) }}</td>
                 <td class="align-middle">
@@ -160,9 +131,11 @@
                   >
                     <font-awesome-icon icon=" fa-solid fa-trash" />
                   </button>
-                  <button class="btn btn-danger"
-                  @click="gotoeditblog(value.id)"
->
+                  <button
+                    class="btn btn-danger"
+                    v-if="value.status != 1"
+                    @click="gotoeditblog(value.id)"
+                  >
                     <font-awesome-icon icon=" fa-solid fa-edit" />
                   </button>
                 </td>
@@ -179,14 +152,17 @@ import Select from "datatables.net-select";
 import Multiselect from "vue-multiselect";
 import VueDatePicker from "@vuepic/vue-datepicker";
 import Swal from "sweetalert2";
+import Nav from "../reuseable/nav.vue";
 
 export default {
   components: {
     Multiselect,
     VueDatePicker,
+    Nav
   },
   data() {
     return {
+        users:null,
       ideas: [],
       form: {
         product_id: "",
@@ -222,9 +198,8 @@ export default {
     };
   },
   methods: {
-    gotoeditblog(id){
-        this.$router.push(`/edit/${id}`);
-
+    gotoeditblog(id) {
+      this.$router.push(`/edit/${id}`);
     },
     goToView(id) {
       this.$router.push(`/view/${id}`);
@@ -272,6 +247,8 @@ export default {
       if (this.Riskvalue.length > 0) {
         this.form.risk = this.Riskvalue[0].id;
       }
+      this.form.creator_id =this.users.id;
+
       axios.post("/api/getblogs", this.form).then((res) => {
         if (res.status == 200) {
           this.ideas = res.data.data;
@@ -281,13 +258,28 @@ export default {
         this.form;
       });
     },
+
+    gotoeditblog1() {
+      axios.post("/api/getall").then((res) => {
+        if (res.status == 200) {
+          this.Productoptions = res.data.data["project_types"];
+          this.Currencyoptions = res.data.data["currency"];
+          this.Countryoptions = res.data.data["country"];
+          this.Regionoptions = res.data.data["regions"];
+        }
+      });
+    },
   },
   mounted() {
+    const f = localStorage.getItem('user');
+    this.users = JSON.parse(f);
+    console.log(this.users)
     let date = new Date(); // Create a new date object with the current date and time
     date.setHours(0, 0, 0, 0); // Set the hours, minutes, seconds, and milliseconds to 0
     console.log(date);
     this.form.startdate = date.toISOString().replace("T", " ").replace("Z", "");
     this.getblogs();
+    this.gotoeditblog1()
   },
 };
 </script>
