@@ -22,7 +22,6 @@ return new class extends Migration
             $table->string('password');
             $table->string('company')->nullable();
             $table->string('poistion')->nullable();
-            $table->foreign('role_id')->references('id')->on('roles')->onDelete('cascade');
             $table->integer('active')->default(0);
             $table->rememberToken();
             $table->timestamps();

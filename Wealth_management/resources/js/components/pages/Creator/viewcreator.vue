@@ -152,10 +152,7 @@
             </div>
           </form>
           <div>
-            <button class="btn btn-dark m-3" @click="po()">Publish</button>
-            <button class="btn btn-dark m-3" @click="Savepublish(false)">
-              Save Draft
-            </button>
+
           </div>
         </div>
       </div>
@@ -331,10 +328,21 @@ export default {
         }
       });
     },
+    gotoeditblog1() {
+      axios.post("/api/getall").then((res) => {
+        if (res.status == 200) {
+          this.Productoptions = res.data.data["project_types"];
+          this.Currencyoptions = res.data.data["currency"];
+          this.Countryoptions = res.data.data["country"];
+          this.Regionoptions = res.data.data["regions"];
+        }
+      });
+    },
   },
   mounted() {
     this.itemId = this.$route.params.id;
     this.getblogdetail(this.itemId);
+    this.gotoeditblog1()
   },
 };
 </script>
@@ -342,8 +350,7 @@ export default {
 .muldiv {
   width: 45%;
 }
-.oi {
-}
+
 .nav-links {
   margin-top: 10vh;
   display: block;

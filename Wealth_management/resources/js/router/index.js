@@ -12,6 +12,8 @@ import Nav from '../components/pages/reuseable/nav.vue'
 import Viewcreator from '../components/pages/Creator/viewcreator.vue'
 import Editcreator from '../components/pages/Creator/edit.vue'
 import viewallcreator from '../components/pages/Creator/viewallblogs.vue'
+import Rmsprofile from '../components/pages/Creator/rmsprofile.vue'
+import Rmsprofiletag from '../components/pages/Creator/rmprofilech.vue'
 
 //RM stuff
 import RmIndexhome from '../components/pages/Rm/dashboard.vue'
@@ -55,11 +57,14 @@ const routes =[
     {
         path:'/creatorprofile',
         component:Profileblog,
-        meta: { requiresAuth: true, requiresCreator: true },
         name:'creatorprofile'
     },
     {
         path:'/',
+        redirect: '/login'
+    },
+    {
+        path:'/login',
         component:Logincomponent,
         name: 'Login'
     },
@@ -83,11 +88,19 @@ const routes =[
         component:Editcreator
     },
     {
+        path:'/Rmprofile/:id',
+        component:Rmsprofiletag
+    },
+    {
         path:'/viewall',
         component:viewallcreator
     },{
         path:'/viewrm/:id',
         component:viewrm
+    },
+    {
+        path:'/ProfilesRm',
+        component:Rmsprofile
     },
 ]
 

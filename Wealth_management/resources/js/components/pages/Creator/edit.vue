@@ -201,6 +201,7 @@ export default {
   },
   data() {
     return {
+        users:null,
       published: null,
       ideas: null,
       itemId: null,
@@ -259,7 +260,7 @@ export default {
       this.form.region_id = this.Regionvalue.id;
       this.form.country_id = this.Countryvalue.id;
       this.form.risk = this.Riskvalue.name;
-      this.form.creator_id = 3;
+      this.form.creator_id = this.users.id;
       this.form.manager_id = message;
       this.form.expiry_at = utcDate1;
       this.form.status = 1;
@@ -310,7 +311,7 @@ export default {
       this.form.region_id = this.Regionvalue.id;
       this.form.country_id = this.Countryvalue.id;
       this.form.risk = this.Riskvalue.name;
-      this.form.creator_id = 3;
+      this.form.creator_id = this.users.id;
       this.form.expiry_at = utcDate1;
       this.form.id = this.ideas.id
 
@@ -375,10 +376,23 @@ export default {
         }
       });
     },
+    gotoeditblog1() {
+      axios.post("/api/getall").then((res) => {
+        if (res.status == 200) {
+          this.Productoptions = res.data.data["project_types"];
+          this.Currencyoptions = res.data.data["currency"];
+          this.Countryoptions = res.data.data["country"];
+          this.Regionoptions = res.data.data["regions"];
+        }
+      });
+    },
   },
   mounted() {
+    const f = localStorage.getItem('user');
+    this.users = JSON.parse(f);
     this.itemId = this.$route.params.id;
     this.getblogdetail(this.itemId);
+    this.gotoeditblog1()
   },
 };
 </script>
@@ -386,8 +400,7 @@ export default {
 .muldiv {
   width: 45%;
 }
-.oi {
-}
+
 .nav-links {
   margin-top: 10vh;
   display: block;

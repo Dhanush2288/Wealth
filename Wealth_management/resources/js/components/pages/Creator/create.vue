@@ -171,9 +171,16 @@
                   class="form-control"
                   id="floatingInput"
                   placeholder="Max value"
-                  v-model="form.maxvalue"
+                  v-model="form.maxrange"
                 />
                 <label for="floatingInput">Max value</label>
+                <range-slider
+    class="slider"
+    min="10"
+    max="1000"
+    step="10"
+    v-model="sliderValue">
+  </range-slider>
               </div>
             </div>
             <div class="muldiv">
@@ -208,6 +215,7 @@ import "@vuepic/vue-datepicker/dist/main.css";
 import Swal from "sweetalert2";
 import $ from "jquery";
 import CustomModal from "./as.vue";
+import RangeSlider from 'vue-range-slider'
 
 export default {
   components: {
@@ -220,6 +228,8 @@ export default {
       modalTitle: "Modal Title",
       modalMessage: "This is the modal message.",
       showModalFlag: false,
+      sliderValue:50,
+      users:null,
       form: {
         title: "",
         abstract: "",
@@ -227,6 +237,7 @@ export default {
         creator_id: "",
         content: "",
         expiry_at: null,
+        maxrange:""
       },
       Productvalue: [],
       Productoptions: [
@@ -257,7 +268,6 @@ export default {
         { name: "UK", id: "2" },
         { name: "US", id: "2" },
       ],
-
     };
   },
   methods: {
@@ -275,7 +285,7 @@ export default {
       this.form.region_id = this.Regionvalue.id;
       this.form.country_id = this.Countryvalue.id;
       this.form.risk = this.Riskvalue.name;
-      this.form.creator_id = 3;
+      this.form.creator_id = this.users.id;
       this.form.manager_id = message;
       this.form.expiry_at = utcDate1;
       this.form.status = 1;
@@ -315,7 +325,7 @@ export default {
       this.form.region_id = this.Regionvalue.id;
       this.form.country_id = this.Countryvalue.id;
       this.form.risk = this.Riskvalue.name;
-      this.form.creator_id = 3;
+      this.form.creator_id = this.users.id;
       this.form.expiry_at = utcDate1;
       console.log(this.form);
       axios.post("/api/createblog", this.form).then((res) => {
@@ -332,13 +342,29 @@ export default {
             toast.addEventListener("mouseleave", Swal.resumeTimer);
           },
         });
-this.$router.push("/creator ")
+        this.$router.push("/creator ");
         Toast.fire({
           icon: "success",
           title: "created in successfully",
         });
       });
     },
+
+    gotoeditblog() {
+      axios.post("/api/getall").then((res) => {
+        if (res.status == 200) {
+          this.Productoptions = res.data.data["project_types"];
+          this.Currencyoptions = res.data.data["currency"];
+          this.Countryoptions = res.data.data["country"];
+          this.Regionoptions = res.data.data["regions"];
+        }
+      });
+    },
+  },mounted() {
+    const f = localStorage.getItem('user');
+    this.users = JSON.parse(f);
+    this.gotoeditblog()
+    console.log(this.users,"this.users");
   },
 };
 </script>

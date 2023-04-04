@@ -51,18 +51,7 @@ class BlogController extends Controller
             if ($request->input("startdate")) {
                 $where[] = ['blog.created_at', '>', $request->input("startdate")];
             }
-            if ($request->input("product_id")) {
-                $where[] = ['blog.product_id', 'IN', $request->input("product_id")];
-            }
-            if ($request->input("region_id")) {
-                $where[] = ['blog.region_id', 'IN', $request->input("region_id")];
-            }
-            if ($request->input("currency_id")) {
-                $where[] = ['blog.currency_id', 'IN', $request->input("currency_id")];
-            }
-            if ($request->input("country_id")) {
-                $where[] = ['blog.country_id', 'IN', $request->input("country_id")];
-            }
+
             if ($request->input("creator_id")) {
                 $where[] = ['blog.creator_id', '=', $request->input("creator_id")];
             }
@@ -74,7 +63,7 @@ class BlogController extends Controller
             }
             $where[] = ['blog.isdeleted', '=', 0];
 
-            $blog = DB::table('blog')
+            $query = DB::table('blog')
                 ->leftjoin('users AS A', 'A.id', '=', 'blog.creator_id')
                 ->leftjoin('users AS B', 'B.id', '=', 'blog.manager_id')
                 ->leftjoin('product_type', 'product_type.id', '=', 'blog.product_id')
@@ -82,9 +71,22 @@ class BlogController extends Controller
                 ->leftjoin('regions', 'regions.id', '=', 'blog.region_id')
                 ->leftjoin('currency', 'currency.id', '=', 'blog.currency_id')
                 ->where($where)
-                ->select('blog.*', 'A.name as creator_name', 'B.name as manager_name', 'product_type.name as product_name', 'currency.name as currency_name', 'country.name as country_name')
-                ->get();
+                ->select('blog.*', 'A.name as creator_name', 'B.name as manager_name', 'product_type.name as product_name', 'currency.name as currency_name', 'country.name as country_name');
 
+                if ($request->input("product_id")) {
+                    $query->whereIn('blog.product_id', $request->input("product_id"));
+                }
+                if ($request->input("region_id")) {
+                    $query->whereIn('blog.region_id', $request->input("region_id"));
+                }
+                if ($request->input("currency_id")) {
+                    $query->whereIn('blog.currency_id', $request->input("currency_id"));
+                }
+                if ($request->input("country_id")) {
+                    $query->whereIn('blog.country_id', $request->input("country_id"));
+                }
+
+                $blog = $query->get();
             $responsee = [
                 'success' => true,
                 'data' => $blog,

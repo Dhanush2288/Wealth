@@ -11,13 +11,13 @@
           </a>
         </li>
         <li class="dashboard active1">
-          <a @click="$router.push('/createblog')">
+          <a @click="$router.push('/viewall')">
             <font-awesome-icon icon="fa-solid fa-building" />
             <span class="textspan"> Blogs </span>
           </a>
         </li>
         <li class="dashboard">
-          <a>
+          <a  @click="$router.push('/ProfilesRm')">
             <font-awesome-icon icon="fa-solid fa-users" />
             <span class="textspan"> Rms profiles </span>
           </a>

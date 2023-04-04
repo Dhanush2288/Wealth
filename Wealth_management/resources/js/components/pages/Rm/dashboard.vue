@@ -1,42 +1,7 @@
 <template>
   <div>
     <div class="w3-sidebar sidenav w3-bar-block" style="width: 17%">
-      <div class="logo">LOGO</div>
-
-      <nav class="navabar">
-        <ul class="nav-links">
-          <li class="dashboard active1">
-            <a @click="$router.push('/manager')">
-              <font-awesome-icon icon="fa-solid fa-house" />
-              <span class="textspan"> Dashboard </span>
-            </a>
-          </li>
-          <li class="dashboard">
-            <a @click="$router.push('/assigned')">
-              <font-awesome-icon icon="fa-solid fa-building" />
-              <span class="textspan"> Assigned </span>
-            </a>
-          </li>
-          <li class="dashboard">
-            <a @click="$router.push('/Clentregister')">
-              <font-awesome-icon icon="fa-solid fa-users" />
-              <span class="textspan"> Clent profiles </span>
-            </a>
-          </li>
-          <li class="dashboard">
-            <a @click="$router.push('/myprofile')">
-              <font-awesome-icon icon=" fa-solid fa-user" />
-              <span class="textspan"> Profile </span>
-            </a>
-          </li>
-          <!-- <li class="dashboard">
-            <a href="http://localhost:4000/contact">
-              <i class="fa fa-phone"></i>
-              <span class="textspan"> Contact us </span></a
-            >
-          </li> -->
-        </ul>
-      </nav>
+      <Nav></Nav>
     </div>
     <!-- Page Content -->
     <div style="margin-left: 17%">
@@ -150,7 +115,9 @@
                 </td>
                 <td class="align-middle prod-tag">
                   <div>
-                    <button v-if="value.status == 1" class="active1">Assigned</button>
+                    <button v-if="value.status == 1" class="active1">
+                      Assigned
+                    </button>
                     <button v-if="value.status == 0">Draft</button>
                   </div>
                 </td>
@@ -162,8 +129,6 @@
                   >
                     Assign
                   </button>
-
-
                 </td>
               </tr>
             </tbody>
@@ -178,14 +143,17 @@ import Select from "datatables.net-select";
 import Multiselect from "vue-multiselect";
 import VueDatePicker from "@vuepic/vue-datepicker";
 import Swal from "sweetalert2";
+import Nav from "../reuseable/rmnav.vue";
 
 export default {
   components: {
     Multiselect,
     VueDatePicker,
+    Nav,
   },
   data() {
     return {
+        users:null,
       ideas: [],
       form: {
         product_id: "",
@@ -198,30 +166,16 @@ export default {
         risk: "",
       },
       Productvalue: [],
-      Productoptions: [
-        { name: "Equity", id: "1" },
-        { name: "BOnd", id: "2" },
-      ],
+      Productoptions: [],
       Currencyvalue: [],
-      Currencyoptions: [{ name: "Rupee", id: "1" }],
+      Currencyoptions: [],
       Riskvalue: [],
-      Riskoptions: [
-        { name: "1", id: "1" },
-        { name: "2", id: "2" },
-        { name: "3", id: "3" },
-        { name: "4", id: "4" },
-        { name: "5", id: "5" },
-      ],
+      Riskoptions: [],
       Countryvalue: [],
-      Countryoptions: [
-        { name: "India", id: "1" },
-        { name: "UK", id: "2" },
-        { name: "US", id: "2" },
-      ],
+      Countryoptions: [],
     };
   },
   methods: {
-
     goToView(id) {
       this.$router.push(`/viewrm/${id}`);
     },
@@ -254,6 +208,16 @@ export default {
         }
       });
     },
+    gotoeditblog() {
+      axios.post("/api/getall").then((res) => {
+        if (res.status == 200) {
+          this.Productoptions = res.data.data["project_types"];
+          this.Currencyoptions = res.data.data["currency"];
+          this.Countryoptions = res.data.data["country"];
+          this.Regionoptions = res.data.data["regions"];
+        }
+      });
+    },
     getblogs() {
       const utcDate1 = new Date()
         .toISOString()
@@ -263,7 +227,8 @@ export default {
       this.form.product_id = this.Productvalue.map((a) => Number(a.id));
 
       this.form.currency_id = this.Currencyvalue.map((a) => Number(a.id));
-      this.form.manager_id = 6
+      console.log(this.users,"this.users");
+      this.form.manager_id =this.users.id;
 
       this.form.region_id = this.Countryvalue.map((a) => Number(a.id));
       if (this.Riskvalue.length > 0) {
@@ -272,6 +237,8 @@ export default {
       axios.post("/api/getblogs", this.form).then((res) => {
         if (res.status == 200) {
           this.ideas = res.data.data;
+          console.log(this.Currencyoptions1);
+
           console.log(this.ideas);
         }
 
@@ -280,88 +247,22 @@ export default {
     },
   },
   mounted() {
+    const f = localStorage.getItem('user');
+    this.users = JSON.parse(f);
+    console.log(this.users)
     let date = new Date(); // Create a new date object with the current date and time
     date.setHours(0, 0, 0, 0); // Set the hours, minutes, seconds, and milliseconds to 0
     console.log(date);
     this.form.startdate = date.toISOString().replace("T", " ").replace("Z", "");
     this.getblogs();
+    this.gotoeditblog();
+
   },
 };
 </script>
     <style scoped>
 .mr-1 {
   margin-right: 10px;
-}
-.nav-links {
-  margin-top: 10vh;
-  display: block;
-  padding-left: 3rem;
-  justify-content: space-between;
-  z-index: 1 !important;
-}
-.close .nav-links {
-  transition: all 0.3s ease-in-out;
-  padding-left: 2rem !important;
-}
-.close .nav-links a .textspan {
-  transition: all 0.3s ease-in-out;
-  display: none;
-}
-.nav-links a {
-  text-decoration: none;
-  font-size: 20px;
-  color: rgb(0, 0, 0);
-  font-weight: 700;
-}
-
-.nav-links a i {
-  font-size: 28px;
-  text-decoration: none;
-  padding-left: 10px;
-}
-.nav-links li {
-  margin-top: 20px;
-  margin-left: 5px;
-  list-style: none;
-  display: flex;
-  cursor: pointer;
-  padding: 10px;
-}
-.nav-links i {
-  font-size: 19px;
-  text-decoration: none;
-  padding-top: 5px;
-}
-.nav-links li:hover {
-  background: #e7e2f8;
-  color: #533f8f;
-  border-radius: 5px;
-  margin-right: 10px;
-}
-.nav-links li span:hover {
-  font-weight: 700;
-  color: #533f8f;
-}
-.active1 {
-  padding-bottom: 3px;
-  background: #e7e2f8;
-  color: #685998;
-  border-radius: 5px;
-  margin-right: 10px;
-}
-.active1 .textspan {
-  /* color: black; */
-  font-weight: 700;
-  color: #533f8f;
-}
-.sidenav {
-  background: #f4f4f8;
-}
-.logo {
-  font-weight: 700;
-  font-size: 35px;
-  font-family: "Poppins", sans-serif;
-  margin: 10px;
 }
 .as {
   width: 52px;

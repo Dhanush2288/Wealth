@@ -11,8 +11,8 @@
           class="bgforprofile"
         />
         <div class="doctorname">
-          <h4 class="">Dhanush</h4>
-          <p>Dhanush@gmail.com</p>
+          <h4 class="">{{ this.user.name }}</h4>
+          <p>{{ this.user.email }}</p>
         </div>
       </div>
       <div class="container">
@@ -82,17 +82,24 @@
         </div>
         <div class="tablerey shadow p-3 mb-5 bg-white rounded">
           <div class="Options">
-            <h1 class="Health">Past Prefreed Records</h1>
+            <h1 class="Health">Past  Records</h1>
           </div>
           <div class="fsf">
             <table class="table">
-              <tr>
-                <td>Dr.raju</td>
-                <td>27/05/2020</td>
-                <td>Lever Problem</td>
-                <td>Chennai Provider</td>
+                <tr
+                v-for="(value, index) in ideas"
+                class="bor-f"
+                v-bind:key="index"
+              >
+                <td style="width:15%">{{value.title}}</td>
+                <td style="padding:5px"> {{value.product_name}}</td>
+                <td>{{value.country_name}}</td>
+                <td>{{value.currency_name}}</td>
+
+                <td>{{value.risk}}</td>
                 <td>
-                  <button class="bop">Set Prefreed</button>
+                  <button class="btn bop"                     @click="gotoeditblog(value.id)"
+>view</button>
                 </td>
               </tr>
             </table>
@@ -102,7 +109,7 @@
     </div>
   </div>
 </template>
-<script>
+  <script>
 import Nav from "../reuseable/rmnav.vue";
 import Multiselect from "vue-multiselect";
 import VueDatePicker from "@vuepic/vue-datepicker";
@@ -118,8 +125,10 @@ export default {
   },
   data() {
     return {
+      users: "",
+      user: {},
       value: 50,
-
+      itemId: null,
       ideas: [],
       form: {
         product_id: "",
@@ -156,57 +165,24 @@ export default {
     };
   },
   methods: {
-    assest(path){
-     return process.env.BASE_URL + path;
-
-    },
     gotoeditblog(id) {
-      this.$router.push(`/edit/${id}`);
+      this.$router.push(`/view/${id}`);
     },
-    goToView(id) {},
-    formatDate(dateString) {
-      const date = new Date(dateString);
-      return date.toLocaleString();
-    },
-    deleteblog(id) {
-      Swal.fire({
-        title: "Are you sure?",
-        text: "You won't be able to revert this!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, delete it!",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          var form = {
-            blog_id: id,
-          };
-          axios.post("/api/deleteblog", form).then((res) => {
-            if (res.data.data == 1) {
-              Swal.fire("Deleted!", "Your blog has been deleted.", "success");
-            } else {
-              Swal.fire("something Worng!", "Danger");
-            }
-            this.getblogs();
-          });
+    getuserdetail(id) {
+      var form = {
+        id: id,
+      };
+      axios.post("/api/userfirst", form).then((res) => {
+        if (res.status == 200) {
+          this.user = res.data.data;
+          this.getblogs();
         }
       });
     },
     getblogs() {
-      const utcDate1 = new Date()
-        .toISOString()
-        .replace("T", " ")
-        .replace("Z", "");
-      console.log(utcDate1);
-      this.form.product_id = this.Productvalue.map((a) => Number(a.id));
-
-      this.form.currency_id = this.Currencyvalue.map((a) => Number(a.id));
-
-      this.form.region_id = this.Countryvalue.map((a) => Number(a.id));
-      if (this.Riskvalue.length > 0) {
-        this.form.risk = this.Riskvalue[0].id;
-      }
+      this.form.creator_id = this.users.id;
+      this.form.manager_id = this.user.id;
+      console.log(this.form, this.user);
       axios.post("/api/getblogs", this.form).then((res) => {
         if (res.status == 200) {
           this.ideas = res.data.data;
@@ -216,7 +192,6 @@ export default {
         this.form;
       });
     },
-
     gotoeditblog1() {
       axios.post("/api/getall").then((res) => {
         if (res.status == 200) {
@@ -229,16 +204,16 @@ export default {
     },
   },
   mounted() {
-    let date = new Date(); // Create a new date object with the current date and time
-    date.setHours(0, 0, 0, 0); // Set the hours, minutes, seconds, and milliseconds to 0
-    console.log(date);
-    this.form.startdate = date.toISOString().replace("T", " ").replace("Z", "");
-    this.getblogs();
+    const f = localStorage.getItem("user");
+    this.users = JSON.parse(f);
+    this.itemId = this.$route.params.id;
+    this.getuserdetail(this.itemId);
     this.gotoeditblog1();
+    this.getblogs();
   },
 };
 </script>
-<style scoped>
+  <style scoped>
 .doctorname {
   display: block;
   position: relative;
@@ -323,7 +298,7 @@ export default {
 }
 .fsf button {
   border: none;
-  border-radius: 24px;
+  border-radius: 4px;
   background: #ebaeff;
   color: #d400ff;
   font-family: "Poppins", sans-serif;

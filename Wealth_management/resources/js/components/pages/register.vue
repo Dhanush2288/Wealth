@@ -22,9 +22,7 @@
         </button>
         <div class="contact">
           <h1 class="loginh1">Sign UP</h1>
-          <p>
-            Welcome ! enter
-          </p>
+          <p>Welcome ! enter</p>
           <form class="uploadsign" id="file-form">
             <div class="mb-3">
               <label for="floatingInput" class="inga">Full Name</label>
@@ -35,9 +33,10 @@
                 id="Fullnmae"
                 placeholder="Full name"
                 v-model="form.name"
+                :class="{ 'is-invalid': !validName }"
               />
-              <div class="invalid-feedback">
-                Please enter a message in the textarea.
+              <div v-if="formSaved && !validName" class="invalid-feedback">
+                Please enter a valid name.
               </div>
             </div>
             <div class="mb-3">
@@ -48,23 +47,30 @@
                 id="floatingInputemail"
                 placeholder="name@example.com"
                 v-model="form.email"
+                :class="{ 'is-invalid': !validEmail }"
               />
-              <div class="invalid-feedback">
-                Please enter a message in the textarea.
-              </div>
+              <div class="invalid-feedback">Please enter a correct email.</div>
             </div>
             <div class="mb-3">
               <label for="floatingInput" class="inga">Role</label>
 
-              <select class="form-select" aria-label="Default select example" v-model="form.role_id">
-                <option selected> Select Role</option>
-                <option value="4">Client</option>
-                <option value="3">Creator</option>
-                <option value="2">Manager</option>
+              <select
+                class="form-select"
+                aria-label="Default select example"
+                v-model="form.role_id"
+                :class="{ 'is-invalid': !validRole }"
+              >
+                <option selected>Select Role</option>
+
+                <option
+                  v-for="(role, index) in roles"
+                  :key="index"
+                  :value="role.id"
+                >
+                  {{ role.name }}
+                </option>
               </select>
-              <div class="invalid-feedback">
-                Please enter a message in the textarea.
-              </div>
+              <div class="invalid-feedback">Please select Role.</div>
             </div>
 
             <div class="mb-3">
@@ -77,10 +83,9 @@
                 id="floatingInputpassword"
                 placeholder="name@example.com"
                 v-model="form.password"
+                :class="{ 'is-invalid': !validPassword }"
               />
-              <div class="invalid-feedback">
-                Please enter a message in the textarea.
-              </div>
+              <div class="invalid-feedback">Please enter Password.</div>
             </div>
             <div class="mb-3">
               <label for="floatingPassword" class="inga"
@@ -93,7 +98,9 @@
                 id="floatingPassword "
                 placeholder="Confrim Password"
                 v-model="form.c_password"
+                :class="{ 'is-invalid': !validConfirmPassword }"
               />
+              <div class="invalid-feedback">Please enter Confrim Password.</div>
             </div>
 
             <button
@@ -101,7 +108,7 @@
               type="submit"
               class="btn btn-lg btn-dark btnlogin"
             >
-              Login
+              Sign up
             </button>
           </form>
         </div>
@@ -110,6 +117,8 @@
   </div>
 </template>
 <script>
+import Swal from "sweetalert2";
+
 export default {
   data() {
     return {
@@ -121,19 +130,78 @@ export default {
         role_id: "",
       },
       errors: [],
+      roles: [],
+      formSaved: false,
     };
+  },
+  computed: {
+    validName() {
+      return !this.formSaved || this.form.name !== "";
+    },
+    validEmail() {
+      return !this.formSaved || this.form.email.length !== 0;
+    },
+    validPassword() {
+      return !this.formSaved || this.form.password.length >= 6;
+    },
+    validConfirmPassword() {
+      return !this.formSaved || this.form.c_password === this.form.password;
+    },
+    validRole() {
+      return !this.formSaved || this.form.role_id !== "";
+    },
+    formIsValid() {
+      return (
+        this.validName &&
+        this.validEmail &&
+        this.validPassword &&
+        this.validConfirmPassword &&
+        this.validRole
+      );
+    },
   },
   methods: {
     saveForm() {
+
+      this.formSaved = true;
+      if (this.formIsValid) {
+        axios
+          .post("/api/register", this.form)
+          .then((response) => {
+            if(response.status==200){
+                this.$router.push({ name: "Login" });
+                Swal.fire("Registered successful!", "You Registered Registered.", "success");
+
+            }else{
+                Swal.fire("something Worng!", "Danger");
+
+            }
+          })
+          .catch((error) => {
+            this.errors = error.response.data.errors;
+          });
+      }
+    },
+    getForm() {
       axios
-        .post("/api/register", this.form)
-        .then(() => {
-          this.$router.push({ name: "Login" });
+        .post("/api/getroles", this.form)
+        .then((response) => {
+            if(response.status==200){
+                this.roles = response.data.data;
+
+            }else{
+
+            }
+          console.log(this.roles);
         })
         .catch((error) => {
+          console.log(error);
           this.errors = error.response.data.errors;
         });
     },
+  },
+  mounted() {
+     this.getForm();
   },
 };
 </script>
