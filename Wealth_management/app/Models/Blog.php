@@ -33,7 +33,8 @@ class Blog extends Authenticatable
         'country_id',
         'content',
         'currency_id',
-        'expiry_at'
+        'expiry_at',
+        'status','maxrange'
     ];
 
 }

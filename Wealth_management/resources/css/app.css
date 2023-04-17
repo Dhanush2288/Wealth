@@ -1,3 +1,46 @@
 .typo__label{
     font-weight: 800;
 }
+.btn-success{
+    background-color: #8d6bb3 !important;
+    font-family: 'Poppins';
+      font-weight: 600;
+}
+.pub {
+    padding-bottom: 3px;
+    background: #913175;
+    color: #ffffff;
+    border-radius: 5px;
+    margin-right: 10px;
+    font-family: 'Poppins';
+    border: none;
+    padding: 8px;
+    font-weight: 600;
+}
+ .draft{
+    padding-bottom: 3px;
+    background: #DDDDDD;
+    color: #000000;
+    border-radius: 5px;
+    margin-right: 10px;
+    font-family: 'Poppins';
+    border: none;
+    padding: 5px 25px;
+    font-weight: 600;
+
+ }
+.assignedbtn{
+    padding-bottom: 3px;
+    background: #DDDDDD;
+    color: #000000;
+    border-radius: 5px;
+     font-family: 'Poppins';
+    border: none;
+    padding: 5px  ;
+    font-weight: 600;
+
+}
+.delete_btn{
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+

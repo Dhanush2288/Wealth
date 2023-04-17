@@ -74,7 +74,10 @@ export default {
 this.hideModal()
     },
     profile() {
-      axios.post("/api/users", this.form).then((res) => {
+        var form={
+            roleid:2
+        }
+      axios.post("/api/users", form).then((res) => {
         if (res.status == 200) {
           this.profiledatas = res.data.data;
         }

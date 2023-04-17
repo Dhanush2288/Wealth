@@ -5,34 +5,39 @@
       <nav class="navabar">
         <ul class="nav-links">
           <li class="dashboard">
-            <a @click="$router.push('/manager')">
+            <a @click="$router.push('/client')">
               <font-awesome-icon icon="fa-solid fa-house" />
               <span class="textspan"> Dashboard </span>
             </a>
           </li>
-          <li class="Assign" @click="$router.push('/Assign')">
-            <a >
+          <li class="Blogs">
+            <a @click="$router.push('/viewassigned')">
               <font-awesome-icon icon="fa-solid fa-building" />
-              <span class="textspan"> Assign </span>
+              <span class="textspan"> Investments </span>
             </a>
           </li>
-          <li class="profiles"  @click="$router.push('/allClientProfile')">
-            <a>
+          <li class="PastAssigned">
+            <a @click="$router.push('/pastassigned')">
+              <font-awesome-icon icon="fa-solid fa-building" />
+              <span class="textspan"> History </span>
+            </a>
+          </li>
+          <li class="profiles">
+            <a @click="$router.push('/Profilesclient')">
               <font-awesome-icon icon="fa-solid fa-users" />
-              <span class="textspan"> Client profiles </span>
+              <span class="textspan"> Rms profiles </span>
             </a>
           </li>
-          <li class="Profile"  @click="$router.push('/MyRmProfile')">
-            <a>
+          <li class="Profile">
+            <a @click="$router.push('/clientprofile')">
               <font-awesome-icon icon=" fa-solid fa-user" />
               <span class="textspan"> Profile </span>
             </a>
           </li>
-          <li class="Log" @click="logout()">
-            <a >
-              <font-awesome-icon icon=" fa-solid fa-sign-out" />
-
-               <span class="textspan"> Log out </span></a
+          <li class="Log">
+            <a @click="logout()">
+              <i class="fa fa-sign-out"></i>
+              <span class="textspan"> Log out </span></a
             >
           </li>
         </ul>
@@ -48,18 +53,23 @@
     },
     methods: {
       add(link) {
-        if (link == "creator") {
+        if (link == "client") {
           console.log(link);
           $(".dashboard").addClass("active11").siblings().removeClass("active11");
+        } else if (link === "viewassigned") {
+          $(".Blogs").addClass("active11").siblings().removeClass("active11");
         }
-        else if (link === "viewrm" || link === "Assign" || link === "viewall") {
-          $(".Assign").addClass("active11").siblings().removeClass("active11");
+        else if (link === "edit" || link === "viewclient" || link === "viewall") {
+          $(".Blogs").addClass("active11").siblings().removeClass("active11");
         }
-        else if (link === "allClientProfile") {
+        else if (link === "Profilesclient") {
           $(".profiles").addClass("active11").siblings().removeClass("active11");
         }
-        else if (link === "ClientProfile" || link === "MyRmProfile" ) {
+        else if (link === "clientprofile") {
           $(".Profile").addClass("active11").siblings().removeClass("active11");
+        }
+        else if (link === "pastassigned") {
+          $(".PastAssigned").addClass("active11").siblings().removeClass("active11");
         }
          else {
           $(".dashboard").addClass("active11").siblings().removeClass("active11");

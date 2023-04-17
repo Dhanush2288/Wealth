@@ -1,67 +1,41 @@
 <template>
   <div>
     <div class="w3-sidebar sidenav w3-bar-block" style="width: 17%">
-
       <Nav></Nav>
-
     </div>
     <!-- Page Content -->
     <div style="margin-left: 17%">
-   <topnav></topnav>
-      <div class="bing m-5">
-        <h2 class="texth2">Blogs</h2>
-        <div class="Clearr">
-          <div class="muldiv">
-            <label class="typo__label">Product Tags</label>
-            <multiselect v-model="Productvalue" :options="Productoptions" :multiple="true" :preserve-search="true"
-              placeholder="Products" label="name" track-by="name">
-            </multiselect>
-          </div>
-          <div class="muldiv">
-            <label class="typo__label">Currency</label>
-            <multiselect v-model="Currencyvalue" :options="Currencyoptions" :multiple="true" :preserve-search="true"
-              placeholder="Currency" label="name" track-by="name">
-            </multiselect>
-          </div>
-          <div class="muldiv">
-            <label class="typo__label">Status</label>
-            <multiselect v-model="Statusvalue" :options="Statusoptions" :multiple="false" :preserve-search="true"
-              placeholder="Status" label="name" track-by="name">
-            </multiselect>
-          </div>
-          <div class="muldiv">
-            <label class="typo__label">Date</label>
-            <VueDatePicker v-model="form.startdate" placeholder="Date" text-input />
-          </div>
-          <div class="muldiv1">
-            <Button class="btn btn-dark w-100 mt-4" @click="getblogs()">
-              Search</Button>
-          </div>
+      <topnav></topnav>
 
-        </div>
+      <div class="bing m-5">
+        <h2 class="texth2">Clients</h2>
+
         <div class="shadow p-3 bg-white rounded">
           <table class="table table-borderless">
             <thead>
               <tr>
                 <th scope="col">#</th>
-                <th scope="col" style="width: 25%">Investment Idea</th>
-                <th scope="col">Product</th>
-                <th scope="col">Max value</th>
-                <th scope="col">Risk</th>
-                <th scope="col">Managar</th>
-                <th scope="col">Status</th>
+                <th scope="col" style="width: 15%">Name</th>
+                <th scope="col">Email</th>
+                <th scope="col">Prefreed Product</th>
+                <th scope="col">Prefreed currency</th>
+                <th scope="col">Prefreed Risk</th>
+                <th scope="col">MAx limit</th>
                 <th scope="col">Assigned</th>
-
                 <th scope="col" style="width: 5 %">Date</th>
                 <th scope="col">Action</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(value, index) in ideas" class="bor-f" v-bind:key="index">
+              <tr
+                v-for="(value, index) in usersall"
+                class="bor-f"
+                v-bind:key="index"
+              >
                 <th scope="row">{{ index + 1 }}</th>
                 <td>
                   <div class="bio">
-                    <p class="Tit">{{ value.title }}</p>
+                    <p class="Tit">{{ value.name }}</p>
                     <p class="Paraab">
                       {{ value.abstract }}
                     </p>
@@ -69,33 +43,31 @@
                 </td>
                 <td class="align-middle prod-tag">
                   <div>
-                    <p class="badge badge-info">{{ value.product_name }}</p>
+                    <p class="">{{ value.email }}</p>
                   </div>
                 </td>
+                <!-- <td class="align-middle prod-tag">
+                    <div>
+                      <p class="">{{ value.product_name }}</p>
+                    </div>
+                  </td> -->
+                <td>{{ value.product_name }}</td>
+                <td>{{ value.currency_name }}</td>
+                <td>{{ value.risk_rating }}</td>
+                <td>{{ value.maxrange }}</td>
 
                 <td class="align-middle prod-tag">
                   <div>
-                    <p class=" ">{{ value.maxrange }}</p>
+                    <button class="assignedbtn">2 Assigned</button>
                   </div>
                 </td>
-                <td class="align-middle">
-                  <button class="btn">{{ value.risk }}</button>
-                </td>
-                <td class="align-middle">
-                  <p class=" ">{{ value.manager_name }}</p>
-                </td>
-                <td class="align-middle prod-tag">
-                  <div>
-                    <button v-if="value.status == 1" class="pub">Published</button>
-                    <button v-if="value.status == 0"  class="draft">Draft</button>
-                  </div>
-                </td>
-                <td class="align-middle">
-                  <button class="btn">{{ value.assigned.length }}</button>
-                </td>
+
                 <td class="align-middle">{{ formatDate(value.created_at) }}</td>
                 <td class="align-middle">
-                  <button class="btn btn-success mr-1" @click="goToView(value.id)">
+                  <button
+                    class="btn btn-success mr-1"
+                    @click="goToView(value.users__id)"
+                  >
                     View
                   </button>
                 </td>
@@ -107,12 +79,12 @@
     </div>
   </div>
 </template>
-<script>
+      <script>
 import Select from "datatables.net-select";
 import Multiselect from "vue-multiselect";
 import VueDatePicker from "@vuepic/vue-datepicker";
 import Swal from "sweetalert2";
-import Nav from "../reuseable/nav.vue";
+import Nav from "../reuseable/rmnav.vue";
 import topnav from "../reuseable/topnav.vue";
 
 export default {
@@ -120,11 +92,12 @@ export default {
     Multiselect,
     VueDatePicker,
     Nav,
-    topnav
+    topnav,
   },
   data() {
     return {
       ideas: [],
+      usersall: [],
       form: {
         product_id: "",
         region_id: "",
@@ -154,7 +127,6 @@ export default {
       Statusoptions: [
         { name: "Published", id: "1" },
         { name: "Draft", id: "0" },
-
       ],
       Countryvalue: [],
       Countryoptions: [
@@ -169,7 +141,7 @@ export default {
       this.$router.push(`/edit/${id}`);
     },
     goToView(id) {
-      this.$router.push(`/view/${id}`);
+      this.$router.push(`/ClientProfile/${id}`);
     },
     formatDate(dateString) {
       const date = new Date(dateString);
@@ -201,24 +173,14 @@ export default {
       });
     },
     getblogs() {
-      const utcDate1 = new Date()
-        .toISOString()
-        .replace("T", " ")
-        .replace("Z", "");
-      console.log(utcDate1);
-      this.form.product_id = this.Productvalue.map((a) => Number(a.id));
-      this.form.currency_id = this.Currencyvalue.map((a) => Number(a.id));
-      this.form.region_id = this.Countryvalue.map((a) => Number(a.id));
-      if (this.Riskvalue.length > 0) {
-        this.form.risk = this.Riskvalue[0].id;
-      }
-      if (Object.keys(this.Statusvalue).length) {
-        this.form.status = this.Statusvalue.id;
-      }
-      axios.post("/api/getblogassignedall", this.form).then((res) => {
+      var form = {
+        roleid: 4,
+      };
+
+      axios.post("/api/assignedclients", form).then((res) => {
         if (res.status == 200) {
-          this.ideas = res.data.data;
-          console.log(this.ideas);
+          this.usersall = res.data.data;
+          console.log(this.usersall);
         }
 
         this.form;
@@ -241,15 +203,14 @@ export default {
     console.log(date);
     this.form.startdate = date.toISOString().replace("T", " ").replace("Z", "");
     this.getblogs();
-    this.gotoeditblog1()
+    this.gotoeditblog1();
   },
 };
 </script>
-<style scoped>
+      <style scoped>
 .mr-1 {
   margin-right: 10px;
 }
-
 .nav-links {
   margin-top: 10vh;
   display: block;
@@ -257,17 +218,14 @@ export default {
   justify-content: space-between;
   z-index: 1 !important;
 }
-
 .close .nav-links {
   transition: all 0.3s ease-in-out;
   padding-left: 2rem !important;
 }
-
 .close .nav-links a .textspan {
   transition: all 0.3s ease-in-out;
   display: none;
 }
-
 .nav-links a {
   text-decoration: none;
   font-size: 20px;
@@ -280,7 +238,6 @@ export default {
   text-decoration: none;
   padding-left: 10px;
 }
-
 .nav-links li {
   margin-top: 20px;
   margin-left: 5px;
@@ -289,25 +246,21 @@ export default {
   cursor: pointer;
   padding: 10px;
 }
-
 .nav-links i {
   font-size: 19px;
   text-decoration: none;
   padding-top: 5px;
 }
-
 .nav-links li:hover {
   background: #e7e2f8;
   color: #533f8f;
   border-radius: 5px;
   margin-right: 10px;
 }
-
 .nav-links li span:hover {
   font-weight: 700;
   color: #533f8f;
 }
-
 .active1 {
   padding-bottom: 3px;
   background: #e7e2f8;
@@ -315,42 +268,35 @@ export default {
   border-radius: 5px;
   margin-right: 10px;
 }
-
 .active1 .textspan {
   /* color: black; */
   font-weight: 700;
   color: #533f8f;
 }
-
 .sidenav {
   background: #f4f4f8;
 }
-
 .logo {
   font-weight: 700;
   font-size: 35px;
   font-family: "Poppins", sans-serif;
   margin: 10px;
 }
-
 .as {
   width: 52px;
   border-radius: 66px;
   height: 52px;
 }
-
 .profilee {
   display: flex;
   width: 264px;
   float: right;
   margin-top: 13px;
 }
-
 .topnav {
   height: 73px;
   background: #f4f4f8;
 }
-
 .h5sd {
   display: inline;
   margin: auto 5px;
@@ -358,58 +304,47 @@ export default {
   font-family: "Poppins";
   font-weight: 600;
 }
-
 .bing {
   height: calc(100vh - 163px);
 }
-
 .Clearr {
   display: flex;
   justify-content: space-evenly;
   padding: 15px;
   background: #e7e2f8;
 }
-
 .muldiv {
   width: 200px;
 }
-
 .muldiv1 {
   width: 200px;
 }
-
 .muldiv2 {
   width: 115px;
 }
-
-.table>thead {
+.table > thead {
   border-bottom: 3px solid #d8d8d8;
 }
-
 .bio p {
   margin: 0px;
 }
-
 .Tit {
   font-weight: 800;
 }
-
 .Paraab {
   color: silver;
 }
-
 .bor-f {
   border-bottom: 3px solid #d8d8d8;
 }
-
 .prod-tag {
   width: 10%;
 }
-
 .badge {
   background: black;
   margin-right: 5px;
   margin-bottom: 0px;
 }
 </style>
-<style src="vue-multiselect/dist/vue-multiselect.css"></style>
+      <style src="vue-multiselect/dist/vue-multiselect.css"></style>
+

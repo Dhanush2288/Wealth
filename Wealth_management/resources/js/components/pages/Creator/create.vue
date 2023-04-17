@@ -1,51 +1,11 @@
 <template>
   <div>
     <div class="w3-sidebar sidenav w3-bar-block" style="width: 17%">
-      <div class="logo">LOGO</div>
-
-      <nav class="navabar">
-        <ul class="nav-links">
-          <li class="dashboard">
-            <a @click="$router.push('/creator')">
-              <font-awesome-icon icon="fa-solid fa-house" />
-              <span class="textspan"> Dashboard </span>
-            </a>
-          </li>
-          <li class="dashboard active1">
-            <a @click="$router.push('/createblog')">
-              <font-awesome-icon icon="fa-solid fa-building" />
-              <span class="textspan"> Blogs </span>
-            </a>
-          </li>
-          <li class="dashboard">
-            <a>
-              <font-awesome-icon icon="fa-solid fa-users" />
-              <span class="textspan"> Rms profiles </span>
-            </a>
-          </li>
-          <li class="dashboard">
-            <a>
-              <font-awesome-icon icon=" fa-solid fa-user" />
-              <span class="textspan"> Profile </span>
-            </a>
-          </li>
-          <!-- <li class="dashboard">
-                <a href="http://localhost:4000/contact">
-                  <i class="fa fa-phone"></i>
-                  <span class="textspan"> Contact us </span></a
-                >
-              </li> -->
-        </ul>
-      </nav>
+      <Nav></Nav>
     </div>
     <!-- Page Content -->
     <div style="margin-left: 17%">
-      <div class="topnav">
-        <div class="profilee">
-          <img class="as" src="image\1606902272profile.jpeg" alt="" />
-          <h5 class="h5sd">Hi Dhanush kodi</h5>
-        </div>
-      </div>
+      <topnav></topnav>
       <div class="blogcre">
         <h1>Create Blog</h1>
         <div class="blog">
@@ -57,8 +17,13 @@
                 id="floatingInput"
                 placeholder="Title"
                 v-model="form.title"
+                :class="{ 'is-invalid': !validtitle }"
+
               />
               <label for="floatingInput">Title</label>
+              <div v-if="formSaved && !validtitle" class="invalid-feedback">
+                Please add Title.
+              </div>
             </div>
             <div class="form-floating mb-3">
               <textarea
@@ -67,8 +32,13 @@
                 id="floatingTextarea"
                 style="height: 70px"
                 v-model="form.abstract"
+                :class="{ 'is-invalid': !validabstract }"
+
               ></textarea>
               <label for="floatingInput">Abstract</label>
+              <div v-if="formSaved && !validabstract" class="invalid-feedback">
+                Please add a Abstract.
+              </div>
             </div>
             <div class="form-floating mb-3">
               <textarea
@@ -77,8 +47,12 @@
                 id="floatingTextarea"
                 style="height: 200px"
                 v-model="form.content"
+                :class="{ 'is-invalid': !validcontent }"
               ></textarea>
               <label for="floatingInput">Content</label>
+              <div v-if="formSaved && !validcontent" class="invalid-feedback">
+                Please add Content.
+              </div>
             </div>
             <div
               style="
@@ -147,8 +121,7 @@
               </div>
             </div>
             <div
-              style="
-                display: flex;
+              style="  display: flex;
                 justify-content: space-between;
                 margin-bottom: 20px;
               "
@@ -162,8 +135,13 @@
                   placeholder="Risk"
                   label="name"
                   track-by="name"
+                  :class="{ 'is-invalid': !validRisk }"
+
                 >
                 </multiselect>
+                <div v-if="formSaved && !validRisk" class="invalid-feedback">
+                Please add Risk.
+              </div>
               </div>
               <div class="form-floating mb-3 muldiv">
                 <input
@@ -175,12 +153,18 @@
                 />
                 <label for="floatingInput">Max value</label>
                 <range-slider
-    class="slider"
-    min="10"
-    max="1000"
-    step="10"
-    v-model="sliderValue">
-  </range-slider>
+                  class="slider"
+                  min="10"
+                  max="1000"
+                  step="10"
+                  v-model="this.form.maxrange"
+                  :class="{ 'is-invalid': !validvalue }"
+
+                >
+                </range-slider>
+                <div v-if="formSaved && !validvalue" class="invalid-feedback">
+                Please add Max value.
+              </div>
               </div>
             </div>
             <div class="muldiv">
@@ -189,7 +173,12 @@
                 v-model="form.expiry_at"
                 placeholder="Start Typing ..."
                 text-input
+                :class="{ 'is-invalid': !validdate }"
+
               />
+              <div v-if="formSaved && !validdate" class="invalid-feedback">
+                Please add expiry date.
+              </div>
             </div>
           </form>
           <div>
@@ -215,37 +204,41 @@ import "@vuepic/vue-datepicker/dist/main.css";
 import Swal from "sweetalert2";
 import $ from "jquery";
 import CustomModal from "./as.vue";
-import RangeSlider from 'vue-range-slider'
+import RangeSlider from "vue-range-slider";
+import Nav from "../reuseable/nav.vue";
+import topnav from "../reuseable/topnav.vue";
 
 export default {
   components: {
     Multiselect,
     VueDatePicker,
     CustomModal,
+    Nav,
+    topnav,
   },
   data() {
     return {
+        formSaved:false,
       modalTitle: "Modal Title",
       modalMessage: "This is the modal message.",
       showModalFlag: false,
-      sliderValue:50,
-      users:null,
+      sliderValue: 50,
+      users: null,
       form: {
         title: "",
         abstract: "",
         risk: "",
         creator_id: "",
         content: "",
-        expiry_at: null,
-        maxrange:""
+        expiry_at: "",
+        maxrange: "",
       },
       Productvalue: [],
       Productoptions: [
-        { name: "Equity", id: "1" },
-        { name: "BOnd", id: "2" },
+
       ],
       Currencyvalue: [],
-      Currencyoptions: [{ name: "Rupee", id: "1" }],
+      Currencyoptions: [ ],
       Riskvalue: [],
       Riskoptions: [
         { name: "1", id: "1" },
@@ -256,23 +249,50 @@ export default {
       ],
       Regionvalue: [],
       Regionoptions: [
-        { name: "TN", id: "1" },
-        { name: "AP", id: "2" },
-        { name: "KL", id: "3" },
-        { name: "VD", id: "4" },
-        { name: "5", id: "5" },
+
       ],
       Countryvalue: [],
       Countryoptions: [
-        { name: "India", id: "1" },
-        { name: "UK", id: "2" },
-        { name: "US", id: "2" },
+
       ],
     };
   },
+    computed: {
+        validtitle() {
+      return !this.formSaved || this.form.title !== "";
+    },
+    validabstract() {
+      return !this.formSaved || this.form.abstract !== "";
+    },
+    validcontent() {
+      return !this.formSaved || this.form.content!='';
+    },
+    validRisk() {
+      return !this.formSaved || this.Riskvalue.id !=""
+    },
+    validvalue() {
+      return !this.formSaved || this.form.maxrange !== "";
+    },
+    validdate() {
+      return !this.formSaved || this.form.expiry_at !== "";
+    },
+    formIsValid() {
+      return (
+        this.validtitle &&
+        this.validabstract &&
+        this.validcontent &&
+        this.validRisk &&
+        this.validvalue &&
+        this.validdate
+      );
+    },
+  },
   methods: {
     po() {
+        this.formSaved = true;
+      if (this.formIsValid) {
       this.$refs.customModal.showModal();
+      }
     },
     handleMessage(message) {
       const utcDate1 = new Date(this.form.expiry_at)
@@ -314,7 +334,10 @@ export default {
       });
     },
     Savepublish(a) {
-      console.log($);
+
+      this.formSaved = true;
+      if (this.formIsValid) {
+        console.log($);
       const utcDate1 = new Date(this.form.expiry_at)
         .toISOString()
         .replace("T", " ")
@@ -342,12 +365,14 @@ export default {
             toast.addEventListener("mouseleave", Swal.resumeTimer);
           },
         });
-        this.$router.push("/creator ");
+        this.$router.push("/creator");
         Toast.fire({
           icon: "success",
           title: "created in successfully",
         });
       });
+      }
+
     },
 
     gotoeditblog() {
@@ -360,11 +385,12 @@ export default {
         }
       });
     },
-  },mounted() {
-    const f = localStorage.getItem('user');
+  },
+  mounted() {
+    const f = localStorage.getItem("user");
     this.users = JSON.parse(f);
-    this.gotoeditblog()
-    console.log(this.users,"this.users");
+    this.gotoeditblog();
+    console.log(this.users, "this.users");
   },
 };
 </script>

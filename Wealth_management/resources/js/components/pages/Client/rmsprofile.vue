@@ -1,16 +1,14 @@
 <template>
     <div>
       <div class="w3-sidebar sidenav w3-bar-block" style="width: 17%">
-
         <Nav></Nav>
-
       </div>
       <!-- Page Content -->
       <div style="margin-left: 17%">
         <topnav></topnav>
 
         <div class="bing m-5">
-          <h2 class="texth2">Managers</h2>
+          <h2 class="texth2">Clients</h2>
 
           <div class="shadow p-3 bg-white rounded">
             <table class="table table-borderless">
@@ -20,7 +18,9 @@
                   <th scope="col" style="width: 15%">Name</th>
                   <th scope="col">Email</th>
                   <th scope="col">Prefreed Product</th>
-
+                  <th scope="col">Prefreed currency</th>
+                  <th scope="col">Prefreed Risk</th>
+                  <th scope="col">MAx limit</th>
                   <th scope="col">Assigned</th>
                   <th scope="col" style="width: 5 %">Date</th>
                   <th scope="col">Action</th>
@@ -46,23 +46,27 @@
                       <p class="">{{ value.email }}</p>
                     </div>
                   </td>
-                  <td class="align-middle prod-tag">
-                    <div>
-                      <p class="">Equity</p>
-                    </div>
-                  </td>
+                  <!-- <td class="align-middle prod-tag">
+                      <div>
+                        <p class="">{{ value.product_name }}</p>
+                      </div>
+                    </td> -->
+                  <td>{{ value.product_name }}</td>
+                  <td>{{ value.currency_name }}</td>
+                  <td>{{ value.risk_rating }}</td>
+                  <td>{{ value.maxrange }}</td>
 
                   <td class="align-middle prod-tag">
                     <div>
-                      <button class="assignedbtn" >2 Assigned</button>
-                     </div>
+                      <button class="assignedbtn">2 Assigned</button>
+                    </div>
                   </td>
 
                   <td class="align-middle">{{ formatDate(value.created_at) }}</td>
                   <td class="align-middle">
                     <button
                       class="btn btn-success mr-1"
-                      @click="goToView(value.id)"
+                      @click="goToView(value.users__id)"
                     >
                       View
                     </button>
@@ -75,24 +79,25 @@
       </div>
     </div>
   </template>
-      <script>
+        <script>
   import Select from "datatables.net-select";
   import Multiselect from "vue-multiselect";
   import VueDatePicker from "@vuepic/vue-datepicker";
   import Swal from "sweetalert2";
-  import Nav from "../reuseable/nav.vue";
+  import Nav from "../reuseable/clientnav.vue";
   import topnav from "../reuseable/topnav.vue";
 
   export default {
     components: {
       Multiselect,
       VueDatePicker,
-      Nav,topnav
+      Nav,
+      topnav,
     },
     data() {
       return {
         ideas: [],
-        usersall:[],
+        usersall: [],
         form: {
           product_id: "",
           region_id: "",
@@ -122,7 +127,6 @@
         Statusoptions: [
           { name: "Published", id: "1" },
           { name: "Draft", id: "0" },
-
         ],
         Countryvalue: [],
         Countryoptions: [
@@ -137,7 +141,7 @@
         this.$router.push(`/edit/${id}`);
       },
       goToView(id) {
-        this.$router.push(`/Rmprofile/${id}`);
+        this.$router.push(`/viewrmt/${id}`);
       },
       formatDate(dateString) {
         const date = new Date(dateString);
@@ -169,11 +173,11 @@
         });
       },
       getblogs() {
-        var form={
-            roleid:2
-        }
+        var form = {
+          roleid: 2,
+        };
 
-        axios.post("/api/users", form).then((res) => {
+        axios.post("/api/assignedclients", form).then((res) => {
           if (res.status == 200) {
             this.usersall = res.data.data;
             console.log(this.usersall);
@@ -199,11 +203,11 @@
       console.log(date);
       this.form.startdate = date.toISOString().replace("T", " ").replace("Z", "");
       this.getblogs();
-      this.gotoeditblog1()
+      this.gotoeditblog1();
     },
   };
   </script>
-      <style scoped>
+        <style scoped>
   .mr-1 {
     margin-right: 10px;
   }
@@ -342,5 +346,5 @@
     margin-bottom: 0px;
   }
   </style>
-      <style src="vue-multiselect/dist/vue-multiselect.css"></style>
+        <style src="vue-multiselect/dist/vue-multiselect.css"></style>
 

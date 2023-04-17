@@ -5,12 +5,7 @@
     </div>
     <!-- Page Content -->
     <div style="margin-left: 17%">
-      <div class="topnav">
-        <div class="profilee">
-          <img class="as" src="image\1606902272profile.jpeg" alt="" />
-          <h5 class="h5sd">Hi Dhanush kodi</h5>
-        </div>
-      </div>
+      <topnav></topnav>
       <div class="blogcre">
         <h1>Assign Blog</h1>
         <div class="blog">
@@ -182,16 +177,18 @@ import Swal from "sweetalert2";
 import $ from "jquery";
 import CustomModal from "./modalrm.vue";
 import Nav from "../reuseable/rmnav.vue";
-
+import topnav from "../reuseable/topnav.vue";
 export default {
   components: {
     Multiselect,
     VueDatePicker,
     CustomModal,
     Nav,
+    topnav,
   },
   data() {
     return {
+        users:null,
       ideas: null,
       itemId: null,
       form: {
@@ -239,10 +236,42 @@ export default {
       this.$refs.customModal.showModal();
     },
     handleMessage(message) {
-        console.log(message,"message-sent");
+      console.log(message, "message-sent");
+      var form={
+        manager_id: this.users.id,
+        blog_id:this.itemId,
+        assigned_user:message
+      }
 
+       axios.post("/api/createassigned", form).then((res) => {
+         const Toast = Swal.mixin({
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          didOpen: (toast) => {
+            toast.addEventListener("mouseenter", Swal.stopTimer);
+            toast.addEventListener("mouseleave", Swal.resumeTimer);
+          },
+        });
+
+        if (res.status == 200) {
+          Toast.fire({
+            icon: "success",
+            title: "assigned to a client successfully",
+          });
+          this.$router.push("/manager");
+        } else {
+          console.log("sdfsd");
+          Toast.fire({
+            icon: "Danger",
+            title: "Something went wrong",
+          });
+        }
+      });
     },
-    Savepublish( ) {
+    Savepublish() {
       console.log($);
       const utcDate1 = new Date(this.form.expiry_at)
         .toISOString()
@@ -319,14 +348,18 @@ export default {
           this.Currencyoptions = res.data.data["currency"];
           this.Countryoptions = res.data.data["country"];
           this.Regionoptions = res.data.data["regions"];
+          this.getblogdetail(this.itemId);
+
         }
       });
     },
   },
   mounted() {
     this.itemId = this.$route.params.id;
-    this.getblogdetail(this.itemId);
-    this.gotoeditblog()
+    this.gotoeditblog();
+
+    const f = localStorage.getItem("user");
+    this.users = JSON.parse(f);
   },
 };
 </script>

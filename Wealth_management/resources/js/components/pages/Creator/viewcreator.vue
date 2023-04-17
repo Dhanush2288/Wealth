@@ -5,12 +5,7 @@
     </div>
     <!-- Page Content -->
     <div style="margin-left: 17%">
-      <div class="topnav">
-        <div class="profilee">
-          <img class="as" src="image\1606902272profile.jpeg" alt="" />
-          <h5 class="h5sd">Hi Dhanush kodi</h5>
-        </div>
-      </div>
+ <topnav></topnav>
       <div class="blogcre">
         <h1>View Blog</h1>
         <div class="blog">
@@ -172,13 +167,14 @@ import Swal from "sweetalert2";
 import $ from "jquery";
 import CustomModal from "./as.vue";
 import Nav from "../reuseable/nav.vue";
+import topnav from "../reuseable/topnav.vue";
 
 export default {
   components: {
     Multiselect,
     VueDatePicker,
     CustomModal,
-    Nav,
+    Nav,topnav
   },
   data() {
     return {

@@ -5,12 +5,7 @@
     </div>
     <!-- Page Content -->
     <div style="margin-left: 17%">
-      <div class="topnav">
-        <div class="profilee">
-          <img class="as" src="image\1606902272profile.jpeg" alt="" />
-          <h5 class="h5sd">Hi Dhanush kodi</h5>
-        </div>
-      </div>
+ <topnav></topnav>
       <div class="bing m-5">
         <h2 class="texth2">Blogs</h2>
         <div class="Clearr">
@@ -109,10 +104,10 @@
                 </td>
                 <td class="align-middle prod-tag">
                   <div>
-                    <button v-if="value.status == 1" class="active1">
+                    <button v-if="value.status == 1" class="pub">
                       Published
                     </button>
-                    <button v-if="value.status == 0" class="active2">
+                    <button v-if="value.status == 0" class="draft">
                       Draft
                     </button>
                   </div>
@@ -126,13 +121,13 @@
                     View
                   </button>
                   <button
-                    class="btn btn-danger mr-1"
+                    class="btn delete_btn mr-1"
                     @click="deleteblog(value.id)"
                   >
                     <font-awesome-icon icon=" fa-solid fa-trash" />
                   </button>
                   <button
-                    class="btn btn-danger"
+                    class="btn btn-secondary"
                     v-if="value.status != 1"
                     @click="gotoeditblog(value.id)"
                   >
@@ -153,12 +148,15 @@ import Multiselect from "vue-multiselect";
 import VueDatePicker from "@vuepic/vue-datepicker";
 import Swal from "sweetalert2";
 import Nav from "../reuseable/nav.vue";
+import topnav from "../reuseable/topnav.vue";
+
 
 export default {
   components: {
     Multiselect,
     VueDatePicker,
-    Nav
+    Nav,
+    topnav
   },
   data() {
     return {
@@ -337,18 +335,7 @@ export default {
   font-weight: 700;
   color: #533f8f;
 }
-.active1 {
-  padding-bottom: 3px;
-  background: #e7e2f8;
-  color: #685998;
-  border-radius: 5px;
-  margin-right: 10px;
-}
-.active1 .textspan {
-  /* color: black; */
-  font-weight: 700;
-  color: #533f8f;
-}
+
 .sidenav {
   background: #f4f4f8;
 }

@@ -5,12 +5,7 @@
     </div>
     <!-- Page Content -->
     <div style="margin-left: 17%">
-      <div class="topnav">
-        <div class="profilee">
-          <img class="as" src="image\1606902272profile.jpeg" alt="" />
-          <h5 class="h5sd">Hi Dhanush kodi</h5>
-        </div>
-      </div>
+      <topnav></topnav>
       <div class="blogcre">
         <h1>Edit Blog</h1>
         <div class="blog">
@@ -22,8 +17,12 @@
                 id="floatingInput"
                 placeholder="Title"
                 v-model="form.title"
+                :class="{ 'is-invalid': !validtitle }"
               />
               <label for="floatingInput">Title</label>
+              <div v-if="formSaved && !validtitle" class="invalid-feedback">
+                Please add Title.
+              </div>
             </div>
             <div class="form-floating mb-3">
               <textarea
@@ -32,8 +31,12 @@
                 id="floatingTextarea"
                 style="height: 70px"
                 v-model="form.abstract"
+                :class="{ 'is-invalid': !validabstract }"
               ></textarea>
               <label for="floatingInput">Abstract</label>
+              <div v-if="formSaved && !validabstract" class="invalid-feedback">
+                Please add a Abstract.
+              </div>
             </div>
             <div class="form-floating mb-3">
               <textarea
@@ -42,8 +45,12 @@
                 id="floatingTextarea"
                 style="height: 200px"
                 v-model="form.content"
+                :class="{ 'is-invalid': !validcontent }"
               ></textarea>
               <label for="floatingInput">Content</label>
+              <div v-if="formSaved && !validcontent" class="invalid-feedback">
+                Please add Content.
+              </div>
             </div>
             <div
               style="
@@ -127,8 +134,12 @@
                   placeholder="Risk"
                   label="name"
                   track-by="name"
+                  :class="{ 'is-invalid': !validRisk }"
                 >
                 </multiselect>
+                <div v-if="formSaved && !validRisk" class="invalid-feedback">
+                  Please add Risk.
+                </div>
               </div>
               <div class="form-floating mb-3 muldiv">
                 <input
@@ -139,6 +150,18 @@
                   v-model="form.maxrange"
                 />
                 <label for="floatingInput">Max value</label>
+                <range-slider
+                  class="slider"
+                  min="10"
+                  max="1000"
+                  step="10"
+                  v-model="this.form.maxrange"
+                  :class="{ 'is-invalid': !validvalue }"
+                >
+                </range-slider>
+                <div v-if="formSaved && !validvalue" class="invalid-feedback">
+                  Please add Max value.
+                </div>
               </div>
             </div>
             <div class="muldiv">
@@ -147,13 +170,17 @@
                 v-model="form.expiry_at"
                 placeholder="Start Typing ..."
                 text-input
+                :class="{ 'is-invalid': !validdate }"
               />
+              <div v-if="formSaved && !validdate" class="invalid-feedback">
+                Please add expiry date.
+              </div>
             </div>
           </form>
           <div>
             <button
               class="btn btn-dark m-3"
-:disabled="this.published == 1"
+              :disabled="this.published == 1"
               @click="po()"
             >
               Publish
@@ -191,6 +218,7 @@ import Swal from "sweetalert2";
 import $ from "jquery";
 import CustomModal from "./as.vue";
 import Nav from "../reuseable/nav.vue";
+import topnav from "../reuseable/topnav.vue";
 
 export default {
   components: {
@@ -198,10 +226,13 @@ export default {
     VueDatePicker,
     CustomModal,
     Nav,
+    topnav,
   },
   data() {
     return {
-        users:null,
+      formSaved: false,
+
+      users: null,
       published: null,
       ideas: null,
       itemId: null,
@@ -216,11 +247,10 @@ export default {
       },
       Productvalue: null,
       Productoptions: [
-        { name: "Equity", id: "1" },
-        { name: "BOnd", id: "2" },
+
       ],
       Currencyvalue: [],
-      Currencyoptions: [{ name: "Rupee", id: "1" }],
+      Currencyoptions: [ ],
       Riskvalue: [],
       Riskoptions: [
         { name: "1", id: "1" },
@@ -231,23 +261,50 @@ export default {
       ],
       Regionvalue: [],
       Regionoptions: [
-        { name: "TN", id: "1" },
-        { name: "AP", id: "2" },
-        { name: "KL", id: "3" },
-        { name: "VD", id: "4" },
-        { name: "5", id: "5" },
+
       ],
       Countryvalue: [],
       Countryoptions: [
-        { name: "India", id: "1" },
-        { name: "UK", id: "2" },
-        { name: "US", id: "2" },
+
       ],
     };
   },
+  computed: {
+    validtitle() {
+      return !this.formSaved || this.form.title !== "";
+    },
+    validabstract() {
+      return !this.formSaved || this.form.abstract !== "";
+    },
+    validcontent() {
+      return !this.formSaved || this.form.content != "";
+    },
+    validRisk() {
+      return !this.formSaved || this.Riskvalue.id !="";
+    },
+    validvalue() {
+      return !this.formSaved || this.form.maxrange !== "";
+    },
+    validdate() {
+      return !this.formSaved || this.form.expiry_at !== "";
+    },
+    formIsValid() {
+      return (
+        this.validtitle &&
+        this.validabstract &&
+        this.validcontent &&
+        this.validRisk &&
+        this.validvalue &&
+        this.validdate
+      );
+    },
+  },
   methods: {
     po() {
-      this.$refs.customModal.showModal();
+      this.formSaved = true;
+      if (this.formIsValid) {
+        this.$refs.customModal.showModal();
+      }
     },
     handleMessage(message) {
       const utcDate1 = new Date(this.form.expiry_at)
@@ -281,9 +338,7 @@ export default {
             toast.addEventListener("mouseleave", Swal.resumeTimer);
           },
         });
-        console.log("====================================");
-        console.log(res.status);
-        console.log("====================================");
+
         if (res.status == 200) {
           Toast.fire({
             icon: "success",
@@ -300,47 +355,51 @@ export default {
       });
     },
     Savepublish(a) {
-      console.log($);
-      const utcDate1 = new Date(this.form.expiry_at)
-        .toISOString()
-        .replace("T", " ")
-        .replace("Z", "");
-      console.log(this.Productvalue);
-      this.form.product_id = this.Productvalue.id;
-      this.form.currency_id = this.Currencyvalue.id;
-      this.form.region_id = this.Regionvalue.id;
-      this.form.country_id = this.Countryvalue.id;
-      this.form.risk = this.Riskvalue.name;
-      this.form.creator_id = this.users.id;
-      this.form.expiry_at = utcDate1;
-      this.form.id = this.ideas.id
+      this.formSaved = true;
+              console.log(this.Riskvalue);
 
-      axios.post("/api/editblog", this.form).then((res) => {
-        const Toast = Swal.mixin({
-          toast: true,
-          position: "top-end",
-          showConfirmButton: false,
-          timer: 3000,
-          timerProgressBar: true,
-          didOpen: (toast) => {
-            toast.addEventListener("mouseenter", Swal.stopTimer);
-            toast.addEventListener("mouseleave", Swal.resumeTimer);
-          },
+      if (this.formIsValid) {
+
+        const utcDate1 = new Date(this.form.expiry_at)
+          .toISOString()
+          .replace("T", " ")
+          .replace("Z", "");
+        console.log(this.Productvalue);
+        this.form.product_id = this.Productvalue.id;
+        this.form.currency_id = this.Currencyvalue.id;
+        this.form.region_id = this.Regionvalue.id;
+        this.form.country_id = this.Countryvalue.id;
+        this.form.risk = this.Riskvalue.name;
+        this.form.creator_id = this.users.id;
+        this.form.expiry_at = utcDate1;
+        this.form.id = this.ideas.id;
+
+        axios.post("/api/editblog", this.form).then((res) => {
+          const Toast = Swal.mixin({
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+              toast.addEventListener("mouseenter", Swal.stopTimer);
+              toast.addEventListener("mouseleave", Swal.resumeTimer);
+            },
+          });
+          if (res.status == 200) {
+            Toast.fire({
+              icon: "success",
+              title: "Blog edited in successfully",
+            });
+            this.$router.push("/creator");
+          } else {
+            Toast.fire({
+              icon: "Danger",
+              title: "Something went wrong",
+            });
+          }
         });
-        if (res.status == 200) {
-          Toast.fire({
-            icon: "success",
-            title: "Blog edited in successfully",
-          });
-          this.$router.push("/creator");
-
-        } else {
-          Toast.fire({
-            icon: "Danger",
-            title: "Something went wrong",
-          });
-        }
-      });
+      }
     },
     getblogdetail(id) {
       var form = {
@@ -383,16 +442,17 @@ export default {
           this.Currencyoptions = res.data.data["currency"];
           this.Countryoptions = res.data.data["country"];
           this.Regionoptions = res.data.data["regions"];
+          this.getblogdetail(this.itemId);
+
         }
       });
     },
   },
   mounted() {
-    const f = localStorage.getItem('user');
+    const f = localStorage.getItem("user");
     this.users = JSON.parse(f);
+    this.gotoeditblog1();
     this.itemId = this.$route.params.id;
-    this.getblogdetail(this.itemId);
-    this.gotoeditblog1()
   },
 };
 </script>

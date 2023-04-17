@@ -10,34 +10,77 @@
             <span class="textspan"> Dashboard </span>
           </a>
         </li>
-        <li class="dashboard active1">
-          <a @click="$router.push('/viewall')">
+        <li class="Blogs" @click="$router.push('/viewall')">
+          <a >
             <font-awesome-icon icon="fa-solid fa-building" />
             <span class="textspan"> Blogs </span>
           </a>
         </li>
-        <li class="dashboard">
-          <a  @click="$router.push('/ProfilesRm')">
+        <li class="profiles"  @click="$router.push('/ProfilesRm')">
+          <a>
             <font-awesome-icon icon="fa-solid fa-users" />
             <span class="textspan"> Rms profiles </span>
           </a>
         </li>
-        <li class="dashboard">
+        <li class="Profile"  @click="$router.push('/creatorprofile')">
           <a>
             <font-awesome-icon icon=" fa-solid fa-user" />
             <span class="textspan"> Profile </span>
           </a>
         </li>
-        <li class="dashboard">
-          <a @click="$router.push('/createblog')">
-            <i class="fa fa-logout"></i>
-            <span class="textspan"> Log out </span></a
+        <li class="Log" @click="logout()">
+          <a >
+            <font-awesome-icon icon=" fa-solid fa-sign-out" />
+
+             <span class="textspan"> Log out </span></a
           >
         </li>
       </ul>
     </nav>
   </div>
 </template>
+<script>
+import $ from 'jquery'
+
+ export default {
+  data() {
+    return {};
+  },
+  methods: {
+    add(link) {
+      if (link == "creator") {
+        console.log(link);
+        $(".dashboard").addClass("active11").siblings().removeClass("active11");
+      } else if (link === "createblog") {
+        $(".Blogs").addClass("active11").siblings().removeClass("active11");
+      }
+      else if (link === "edit" || link === "view" || link === "viewall") {
+        $(".Blogs").addClass("active11").siblings().removeClass("active11");
+      }
+      else if (link === "ProfilesRm") {
+        $(".profiles").addClass("active11").siblings().removeClass("active11");
+      }
+      else if (link === "creatorprofile") {
+        $(".Profile").addClass("active11").siblings().removeClass("active11");
+      }
+       else {
+        $(".dashboard").addClass("active11").siblings().removeClass("active11");
+      }
+      $(document).on("click", "ul li", function () {
+        $(this).addClass("active11").siblings().removeClass("active11");
+      });
+    },
+    logout() {
+      localStorage.removeItem("user");
+      this.$router.push("/login");
+    },
+  },
+  mounted() {
+    console.log(this.$route.name);
+    this.add(this.$route.name);
+  },
+};
+</script>
 <style scoped>
 .muldiv {
   width: 45%;
@@ -94,14 +137,14 @@
   font-weight: 700;
   color: #533f8f;
 }
-.active1 {
+.active11 {
   padding-bottom: 3px;
   background: #e7e2f8;
   color: #685998;
   border-radius: 5px;
   margin-right: 10px;
 }
-.active1 .textspan {
+.active11 .textspan {
   /* color: black; */
   font-weight: 700;
   color: #533f8f;

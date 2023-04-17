@@ -9,10 +9,17 @@ window._ = _;
 
 import axios from 'axios';
 window.axios = axios;
+var f = localStorage.getItem('token');
+const token = JSON.parse(f);
+
+// Set axios default headers with token
+if (token) {
+  window.axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+}
 // const config = {
 //     headers: { Authorization: `Bearer ${token}` }
 // };
-window.axios.defaults.headers.common['X-Authorization-With'] = 'XMLHttpRequest';
+// window.axios.defaults.headers.common['X-Authorization-With'] = 'XMLHttpRequest';
 
 /**
  * Echo exposes an expressive API for subscribing to channels and listening

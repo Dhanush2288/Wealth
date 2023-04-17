@@ -30,6 +30,7 @@
                 placeholder="Products"
                 label="name"
                 track-by="name"
+                disabled
               >
               </multiselect>
             </div>
@@ -43,6 +44,7 @@
                 placeholder="Currency"
                 label="name"
                 track-by="name"
+                disabled
               >
               </multiselect>
             </div>
@@ -56,6 +58,7 @@
                 placeholder="Risk"
                 label="name"
                 track-by="name"
+                disabled
               >
               </multiselect>
             </div>
@@ -67,39 +70,33 @@
                   :min="0"
                   :max="10000"
                   :interval="10"
+                  disabled
                 ></vue-slider>
               </div>
-            </div>
-            <div class="muldiv">
-              <button
-                class="btn btn-dark w-100 mt-4"
-                @click="goToView(value.id)"
-              >
-                Save
-              </button>
             </div>
           </div>
         </div>
         <div class="tablerey shadow p-3 mb-5 bg-white rounded">
           <div class="Options">
-            <h1 class="Health">Past  Records</h1>
+            <h1 class="Health">Past Records</h1>
           </div>
           <div class="fsf">
             <table class="table">
-                <tr
+              <tr
                 v-for="(value, index) in ideas"
                 class="bor-f"
                 v-bind:key="index"
               >
-                <td style="width:15%">{{value.title}}</td>
-                <td style="padding:5px"> {{value.product_name}}</td>
-                <td>{{value.country_name}}</td>
-                <td>{{value.currency_name}}</td>
+                <td style="width: 15%">{{ value.title }}</td>
+                <td style="padding: 5px">{{ value.product_name }}</td>
+                <td>{{ value.country_name }}</td>
+                <td>{{ value.currency_name }}</td>
 
-                <td>{{value.risk}}</td>
+                <td>{{ value.risk }}</td>
                 <td>
-                  <button class="btn bop"                     @click="gotoeditblog(value.id)"
->view</button>
+                  <button class="btn bop" @click="gotoeditblog(value.id)">
+                    View
+                  </button>
                 </td>
               </tr>
             </table>
@@ -110,18 +107,21 @@
   </div>
 </template>
   <script>
-import Nav from "../reuseable/rmnav.vue";
+import Nav from "../reuseable/nav.vue";
 import Multiselect from "vue-multiselect";
 import VueDatePicker from "@vuepic/vue-datepicker";
 import Swal from "sweetalert2";
 import VueSlider from "vue-slider-component";
 import "vue-slider-component/theme/default.css";
+import topnav from "../reuseable/topnav.vue";
+
 export default {
   components: {
     Nav,
     Multiselect,
     VueDatePicker,
     VueSlider,
+    topnav
   },
   data() {
     return {
@@ -180,7 +180,6 @@ export default {
       });
     },
     getblogs() {
-      this.form.creator_id = this.users.id;
       this.form.manager_id = this.user.id;
       console.log(this.form, this.user);
       axios.post("/api/getblogs", this.form).then((res) => {
@@ -202,15 +201,42 @@ export default {
         }
       });
     },
+    getprefreeddetail(id) {
+      var form = {
+        user_id: id,
+      };
+      axios.post("/api/getpreferred", form).then((res) => {
+        if (res.status == 200) {
+          this.ideas = res.data.data;
+
+          this.Productvalue = this.Productoptions.find(
+            (option) => option.id == this.ideas.product_id
+          );
+          this.Currencyvalue = this.Currencyoptions.find(
+            (option) => option.id == this.ideas.currency_id
+          );
+          this.Regionvalue = this.Regionoptions.find(
+            (option) => option.id == this.ideas.region_id
+          );
+          this.Countryvalue = this.Countryoptions.find(
+            (option) => option.id == this.ideas.country_id
+          );
+          this.Riskvalue = this.Riskoptions.find(
+            (option) => option.id == this.ideas.risk_rating
+          );
+          console.log(this.Riskvalue);
+        }
+      });
+    },
   },
   mounted() {
     const f = localStorage.getItem("user");
     this.users = JSON.parse(f);
     this.itemId = this.$route.params.id;
     this.getuserdetail(this.itemId);
+    this.getprefreeddetail(this.itemId)
     this.gotoeditblog1();
-    this.getblogs();
-  },
+   },
 };
 </script>
   <style scoped>
@@ -297,13 +323,14 @@ export default {
   vertical-align: middle;
 }
 .fsf button {
-  border: none;
-  border-radius: 4px;
-  background: #ebaeff;
-  color: #d400ff;
-  font-family: "Poppins", sans-serif;
-  font-weight: 600;
-  font-size: 14px;
+    font-family: 'Poppins';
+    border: none;
+    padding: 5px 25px;
+    font-weight: 600;
+    padding-bottom: 3px;
+    background: #913175;
+    color: #ffffff;
+    border-radius: 5px;
 }
 .details td {
   color: #394b55;

@@ -121,6 +121,7 @@ class BlogController extends Controller
             //throw $th;
         }
     }
+
     public function editblog(Request $request)
     {
         try {

@@ -5,10 +5,10 @@
     </div>
     <!-- Page Content -->
     <div style="margin-left: 17%">
-        <topnav></topnav>
+      <topnav></topnav>
 
       <div class="bing m-5">
-        <h2 class="texth2">Investment Ideas</h2>
+        <h2 class="texth2">Assigned Ideas</h2>
         <div class="Clearr">
           <div class="muldiv">
             <label class="typo__label">Product Tags</label>
@@ -23,19 +23,6 @@
             >
             </multiselect>
           </div>
-          <div class="muldiv">
-            <label class="typo__label">Currency</label>
-            <multiselect
-              v-model="Currencyvalue"
-              :options="Currencyoptions"
-              :multiple="true"
-              :preserve-search="true"
-              placeholder="Currency"
-              label="name"
-              track-by="name"
-            >
-            </multiselect>
-          </div>
 
           <div class="muldiv2">
             <label class="typo__label">Risk</label>
@@ -44,6 +31,19 @@
               :options="Riskoptions"
               :multiple="true"
               placeholder="Risk"
+              label="name"
+              track-by="name"
+            >
+            </multiselect>
+          </div>
+          <div class="muldiv">
+            <label class="typo__label">Status</label>
+            <multiselect
+              v-model="Statusvalue"
+              :options="Statusoptions"
+              :multiple="true"
+              :preserve-search="true"
+              placeholder="Status"
               label="name"
               track-by="name"
             >
@@ -71,15 +71,16 @@
                 <th scope="col">#</th>
                 <th scope="col" style="width: 25%">Investment Idea</th>
                 <th scope="col">Product</th>
-                <th scope="col">Currency</th>
-
-                <th scope="col">Max value</th>
 
                 <th scope="col">Risk</th>
+                <th scope="col">Client</th>
+
+                <th scope="col">expiries at</th>
                 <th scope="col">Status</th>
+                <th scope="col">Message</th>
 
                 <th scope="col" style="width: 5 %">Date</th>
-                <th scope="col">Action</th>
+                <th scope="col"></th>
               </tr>
             </thead>
             <tbody>
@@ -102,26 +103,50 @@
                     <p class=" ">{{ value.product_name }}</p>
                   </div>
                 </td>
-                <td class="align-middle prod-tag">
-                  <div>
-                    <p class=" ">{{ value.currency_name }}</p>
-                  </div>
-                </td>
-                <td class="align-middle prod-tag">
-                  <div>
-                    <p class=" ">{{ value.maxrange }}</p>
-                  </div>
-                </td>
+
                 <td class="align-middle">
                   <button class="btn">{{ value.risk }}</button>
                 </td>
                 <td class="align-middle prod-tag">
                   <div>
-                    <button v-if="value.assigned.length >0" class="pub">
-                      Assigned to {{value.assigned.length  }}
-                    </button>
-                    <button v-else class="draft">Not Yet Assigned </button>
+                    <p class=" ">{{ value.assigneduser_name }}</p>
                   </div>
+                </td>
+                <td class="align-middle prod-tag">
+                  <div>
+                    <p class=" ">{{ formatDate(value.expiry_at) }}</p>
+                  </div>
+                </td>
+
+                <td class="align-middle prod-tag">
+                  <div>
+                    <button v-if="value.assigned_status == 1" class="pub">
+                      Proceed
+                    </button>
+                    <button
+                      v-else-if="value.assigned_status === 2"
+                      class="draft"
+                    >
+                      Rejected
+                    </button>
+                    <button
+                      v-else-if="value.assigned_status == 0"
+                      class="draft"
+                    >
+                      Not yet decided
+                    </button>
+                  </div>
+                </td>
+                <td class="align-middle">
+                  <button
+                    class="btn btn-success mr-1 sd"
+                    @click="opencomment(value.blog_id)"
+                  >
+                    <div class="sddiv" v-if="value.comments.length > 0">
+                      <p class="sdp">{{ value.comments.length }}</p>
+                    </div>
+                    <font-awesome-icon :icon="['fas', 'message']" />
+                  </button>
                 </td>
                 <td class="align-middle">{{ formatDate(value.created_at) }}</td>
                 <td class="align-middle">
@@ -129,7 +154,7 @@
                     class="btn btn-success mr-1"
                     @click="goToView(value.id)"
                   >
-                    Assign
+                    <font-awesome-icon :icon="['fass', 'eye']" />
                   </button>
                 </td>
               </tr>
@@ -138,9 +163,43 @@
         </div>
       </div>
     </div>
+    <div class="message" v-bind:class="{ openmessage: showcomment }">
+      <div class="topme">
+        <p class="messagep">Comments</p>
+        <div class="messagei" @click="close()">
+          <font-awesome-icon class="pod" :icon="['fas', 'close']" />
+        </div>
+      </div>
+      <div class="messagecon">
+        <div class="messagecon2">
+          <div class="chat-container" id="polic">
+            <div
+              class="chat-bubble"
+              v-for="(value, index) in this.messages"
+              v-bind:key="index"
+              v-bind:class="{ sent: value.user_id == this.users.id }"
+            >
+              <p class="message1">{{ value.body }}</p>
+              <p class="date">Sent on {{ value.created_at }}</p>
+            </div>
+          </div>
+        </div>
+        <div class="messagecon1">
+          <input
+            type="text"
+            class="messageinpt"
+            placeholder="Send Comment"
+            v-model="chat"
+          />
+          <button class="btn btn-secondary bth" @click="send()">
+            <font-awesome-icon :icon="['fas', 'paper-plane']" />
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
-    <script>
+      <script>
 import Select from "datatables.net-select";
 import Multiselect from "vue-multiselect";
 import VueDatePicker from "@vuepic/vue-datepicker";
@@ -153,12 +212,16 @@ export default {
     Multiselect,
     VueDatePicker,
     Nav,
-    topnav
+    topnav,
   },
   data() {
     return {
-        users:null,
+      messages: [],
+      itemId: null,
+      showcomment: false,
+      users: null,
       ideas: [],
+      selected_id: "",
       form: {
         product_id: "",
         region_id: "",
@@ -174,7 +237,13 @@ export default {
       Currencyvalue: [],
       Currencyoptions: [],
       Riskvalue: [],
-      Riskoptions:  [
+      Statusvalue: [],
+      Statusoptions: [
+        { name: "Proceed", id: "1" },
+        { name: "Rejected", id: "2" },
+        { name: "Not Yet decided", id: "0" },
+      ],
+      Riskoptions: [
         { name: "1", id: "1" },
         { name: "2", id: "2" },
         { name: "3", id: "3" },
@@ -186,6 +255,59 @@ export default {
     };
   },
   methods: {
+    send() {
+      var form = {
+        blog_id: this.selected_id,
+        user_id: this.users.id,
+        body: this.chat,
+      };
+      axios.post("/api/comments", form).then((res) => {
+        if (res.status == 200) {
+          this.chat = "";
+          this.getcomments(this.selected_id);
+        }
+      });
+    },
+    fo(idd) {
+      const str = idd;
+      const arr = str.split(",");
+      return arr.length;
+    },
+    getcomments(id) {
+      var form = {
+        blog_id: id,
+        // user_id: this.users.id,
+      };
+      axios.post("/api/getcomments", form).then((res) => {
+        if (res.status == 200) {
+          this.messages = res.data.data;
+          var div = document.getElementById("polic");
+          div.scrollTop = div.scrollHeight - div.clientHeight;
+          console.log(div.scrollTop);
+        }
+      });
+    },
+    close() {
+      this.showcomment = !this.showcomment;
+    },
+    opencomment(a) {
+      this.selected_id = a;
+      if (this.selected_id != "") {
+        this.showcomment = !this.showcomment;
+      }
+      if (a != "" || a != null) {
+        var form = {
+          blog_id: a,
+          user_id: this.users.id,
+        };
+        axios.post("/api/updateseen", form).then((res) => {
+          if (res.status == 200) {
+            this.getcomments(a);
+            this.getblogs();
+          }
+        });
+      }
+    },
     goToView(id) {
       this.$router.push(`/viewrm/${id}`);
     },
@@ -237,18 +359,21 @@ export default {
       this.form.product_id = this.Productvalue.map((a) => Number(a.id));
 
       this.form.currency_id = this.Currencyvalue.map((a) => Number(a.id));
-      console.log(this.users,"this.users");
-      this.form.manager_id =this.users.id;
+      console.log(this.users, "this.users");
+      this.form.manager_id = this.users.id;
+      this.form.user_id = this.users.id;
 
       this.form.region_id = this.Countryvalue.map((a) => Number(a.id));
-      console.log(this.Riskvalue);
       if (this.Riskvalue.length > 0) {
         this.form.risk = this.Riskvalue[0].id;
-      }else{
-
-        this.form.risk=""
+      } else {
+        this.form.risk = "";
       }
-      axios.post("/api/getblogassignedall", this.form).then((res) => {
+      console.log(this.Statusvalue.length);
+      if (this.Statusvalue.length > 0) {
+        this.form.assigned_status = this.Statusvalue[0].id;
+      }
+      axios.post("/api/getseen", this.form).then((res) => {
         if (res.status == 200) {
           this.ideas = res.data.data;
           console.log(this.Currencyoptions1);
@@ -261,20 +386,20 @@ export default {
     },
   },
   mounted() {
-    const f = localStorage.getItem('user');
+    const f = localStorage.getItem("user");
     this.users = JSON.parse(f);
-    console.log(this.users)
+    this.gotoeditblog();
+
+    console.log(this.users);
     let date = new Date(); // Create a new date object with the current date and time
     date.setHours(0, 0, 0, 0); // Set the hours, minutes, seconds, and milliseconds to 0
     console.log(date);
     this.form.startdate = date.toISOString().replace("T", " ").replace("Z", "");
     this.getblogs();
-    this.gotoeditblog();
-
   },
 };
 </script>
-    <style scoped>
+      <style scoped>
 .mr-1 {
   margin-right: 10px;
 }
@@ -309,6 +434,21 @@ export default {
   padding: 15px;
   background: #e7e2f8;
 }
+
+.messagei {
+  display: inline;
+  float: revert;
+  margin-top: 16px;
+  position: absolute;
+  right: 9px;
+}
+.pod {
+  font-size: 24px;
+}
+.openmessage {
+  width: 400px !important;
+  height: 400px !important;
+}
 .muldiv {
   width: 200px;
 }
@@ -341,6 +481,108 @@ export default {
   margin-right: 5px;
   margin-bottom: 0px;
 }
+.sd {
+  position: relative;
+}
+.sddiv {
+  width: 17px;
+  height: 18px;
+  position: absolute;
+  top: 0px;
+  left: 30px;
+  background: #9d2121;
+  border-radius: 21px;
+}
+.sdp {
+  /* position: absolute; */
+  /* top: 0px; */
+  /* left: 30px; */
+  /* background: red; */
+  margin: 0;
+  font-size: 13px;
+}
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
+  padding: 10px;
+  background-color: #f5f5f5;
+}
+
+.chat-bubble {
+  display: flex;
+  flex-direction: column;
+  max-width: 80%;
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 16px;
+  background-color: #fff;
+  box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+}
+
+.chat-bubble.sent {
+  align-self: flex-end;
+  background-color: #dcf8c6;
+}
+
+.chat-bubble.seen {
+  color: #bbb;
+}
+
+.chat-bubble .message1 {
+  margin: 0;
+}
+
+.chat-bubble .date {
+  margin: 0;
+  font-size: 12px;
+  color: #888;
+  text-align: right;
+}
+
+.message {
+  width: 250px;
+  height: 50px;
+  background: yellowgreen;
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  border-radius: 8px;
+}
+.messagecon {
+  /* width: 400px; */
+  height: 400px;
+  background: white;
+}
+.messagecon2 {
+  height: 75%;
+}
+.messagecon1 {
+  background: yellowgreen;
+  height: 25%;
+}
+.messageinpt {
+  padding: 5px;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+  width: 80%;
+  /* margin: auto; */
+  margin: 6px;
+  margin-right: 0px;
+  outline: none;
+}
+.messagep {
+  /* margin: 0px; */
+  display: inline-flex;
+  margin-top: 11px;
+  margin-left: 20px;
+  font-size: 21px;
+  font-weight: 900;
+}
 </style>
-    <style src="vue-multiselect/dist/vue-multiselect.css"></style>
+      <style src="vue-multiselect/dist/vue-multiselect.css"></style>
 

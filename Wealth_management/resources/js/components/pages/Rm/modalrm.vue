@@ -14,12 +14,18 @@
           <h4>Clients</h4>
         </div>
       </div>
+      <p v-if="this.showall">No recommedation found so we are showing all clients</p>
       <table class="user-table" style="margin: 10px">
         <thead>
           <tr>
             <th>Image</th>
             <th>Name</th>
             <th>Email</th>
+            <th>Prefreed Product</th>
+            <th>Prefreed Currency</th>
+            <th>Prefreed Risk</th>
+            <th>Max investment</th>
+
             <th>Actions</th>
           </tr>
         </thead>
@@ -31,15 +37,19 @@
           >
             <td>
               <img
-                src="C:\Users\poove\Desktop\WMS\Wealth\Wealth_management\public\image\pexels-photo-220453.jpeg"
+              :src="avatarUrl"
                 alt="User Image"
                 class="imgsrc"
               />
             </td>
             <td>{{ value.name }}</td>
             <td>{{ value.email }}</td>
+            <td>{{ value.product_name }}</td>
+            <td>{{ value.currency_name }}</td>
+            <td>{{ value.risk_rating }}</td>
+            <td>{{ value.maxrange }}</td>
             <td>
-              <button class="btn btn-dark" v-on:click="assign(value.id)">
+              <button class="btn btn-dark" v-on:click="assign(value.user_id)">
                 Assign
               </button>
             </td>
@@ -57,10 +67,22 @@ export default {
   name: "CustomModal",
 
   data() {
-    return {
+    return {itemId:null,
       isActive: false,
       profiledatas: [],
+      showall:false,
+      imagestype: ["Aneka", "Angel", "Scooter", "Charlie", "Lucy", "Cuddles"],
+
     };
+  },
+  computed: {
+    avatarUrl() {
+      const type =
+        this.imagestype[Math.floor(Math.random() * this.imagestype.length)];
+      const baseUrl = `https://api.dicebear.com/6.x/big-smile/svg?seed=${type}&backgroundColor=c0aede&backgroundType=gradientLinear&flip=true`;
+
+      return baseUrl;
+    },
   },
   methods: {
     showModal() {
@@ -75,16 +97,33 @@ export default {
     },
     profile() {
         var form={
-            roleid:4
+            blog_id: this.itemId
         }
-      axios.post("/api/users", form).then((res) => {
+      axios.post("/api/recommendUsers", form).then((res) => {
         if (res.status == 200) {
-          this.profiledatas = res.data.data;
+            if(res.data.success){
+                this.profiledatas = res.data.data
+            }else{
+                var foorm={
+                    roleid:4
+                }
+                axios.post("/api/userpreall", foorm).then((res) => {
+                    if (res.status == 200) {
+                        this.showall=true
+                        this.profiledatas = res.data.data
+
+                    }
+
+                })
+            }
+        //   this.profiledatas = res.data.data;
         }
       });
     },
   },
   mounted() {
+    this.itemId = this.$route.params.id;
+console.log(this.itemId,'this.itemId');
     this.profile();
   },
 };
@@ -143,7 +182,7 @@ export default {
 .modal-content {
   background-color: white;
   margin: auto;
-  max-width: 40%;
+  max-width: 75%;
   max-height: 80%;
   overflow: auto;
   position: relative;

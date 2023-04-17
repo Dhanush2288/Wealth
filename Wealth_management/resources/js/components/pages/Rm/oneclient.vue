@@ -6,18 +6,15 @@
     <div style="margin-left: 17%">
       <div class="container contain">
         <img :src="asset('image/cover.png')" class="bgforcover" />
-        <img
-          :src="asset('image/1606902272profile.jpeg')"
-          class="bgforprofile"
-        />
+        <img :src="avatarUrl" class="bgforprofile" />
         <div class="doctorname">
-          <h4 class="">{{ this.users.name }}</h4>
-          <p>{{ this.users.email }}</p>
+          <h4 class="">{{ this.user.name }}</h4>
+          <p>{{ this.user.email }}</p>
         </div>
       </div>
       <div class="container">
         <div>
-          <h5>Prefreed investment</h5>
+          <h5>Prefreed indvestment</h5>
 
           <div class="Clearr">
             <div class="muldiv">
@@ -25,11 +22,12 @@
               <multiselect
                 v-model="Productvalue"
                 :options="Productoptions"
-                :multiple="false"
+                :multiple="true"
                 :preserve-search="true"
                 placeholder="Products"
                 label="name"
                 track-by="name"
+                disabled
               >
               </multiselect>
             </div>
@@ -38,11 +36,12 @@
               <multiselect
                 v-model="Currencyvalue"
                 :options="Currencyoptions"
-                :multiple="false"
+                :multiple="true"
                 :preserve-search="true"
                 placeholder="Currency"
                 label="name"
                 track-by="name"
+                disabled
               >
               </multiselect>
             </div>
@@ -52,10 +51,11 @@
               <multiselect
                 v-model="Riskvalue"
                 :options="Riskoptions"
-                :multiple="false"
+                :multiple="true"
                 placeholder="Risk"
                 label="name"
                 track-by="name"
+                disabled
               >
               </multiselect>
             </div>
@@ -67,61 +67,53 @@
                   :min="0"
                   :max="10000"
                   :interval="10"
+                  disabled
                 ></vue-slider>
               </div>
-            </div>
-            <div class="muldiv">
-              <button class="btn btn-dark w-100 mt-4" @click="save()">
-                Save
-              </button>
             </div>
           </div>
         </div>
         <div class="tablerey shadow p-3 mb-5 bg-white rounded">
           <div class="Options">
-            <h1 class="Health">Past Prefreed Records</h1>
+            <h1 class="Health">Past assigned Records</h1>
           </div>
           <div class="fsf">
             <table class="table">
-                <thead>
-                    <th>
-                        Product name
-                    </th>
-                    <th>
-                        Currency name
-                    </th>
-                    <th>
-                        Risk rating
-                    </th>
-                    <th>
-                        Max range
-                    </th>
-                    <th>
-
-                    </th>
-                </thead>
+              <thead>
+                <th>Title</th>
+                <th>Product name</th>
+                <th>Currency name</th>
+                <th>Risk rating</th>
+                <th>Max range</th>
+                <th>Status</th>
+                <th></th>
+              </thead>
               <tr
                 v-for="(value, index) in ideas"
                 class="bor-f"
                 v-bind:key="index"
               >
-                <td >{{ value.product_name }}</td>
+                <td style="width: 15%">{{ value.title }}</td>
+                <td style="padding: 5px">{{ value.product_name }}</td>
                 <td>{{ value.currency_name }}</td>
-
-                <td>
-                  {{ value.risk_rating ? value.risk_rating + " Rating" : " " }}
-                </td>
+                <td>{{ value.risk }}</td>
                 <td>{{ value.maxrange }}</td>
 
                 <td>
-                  <button class="btn bop" @click="gotoeditblog(value)">
-                    Set Prefreed
+                  <button v-if="value.assigned_status == 1" class="pub">
+                    Proceed
                   </button>
-                  <!-- <button class="btn bop  " style="margin-left: 5px;" @click="gotoeditblog(value)">
-                    Delete
-                  </button> -->
+                  <button v-else-if="value.assigned_status == 0" class="draft">
+                    Not yet decided
+                  </button>
+                  <button v-else class="draft">Rejected</button>
                 </td>
 
+                <td>
+                  <button class="btn bop" @click="gotoeditblog(value.id)">
+                    View
+                  </button>
+                </td>
               </tr>
             </table>
           </div>
@@ -131,7 +123,7 @@
   </div>
 </template>
     <script>
-import Nav from "../reuseable/nav.vue";
+import Nav from "../reuseable/rmnav.vue";
 import Multiselect from "vue-multiselect";
 import VueDatePicker from "@vuepic/vue-datepicker";
 import Swal from "sweetalert2";
@@ -145,7 +137,7 @@ export default {
     Multiselect,
     VueDatePicker,
     VueSlider,
-    topnav
+    topnav,
   },
   data() {
     return {
@@ -154,18 +146,26 @@ export default {
       value: 50,
       itemId: null,
       ideas: [],
+      imagestype: ["Aneka", "Angel", "Scooter", "Charlie", "Lucy", "Cuddles"],
+
       form: {
         product_id: "",
         region_id: "",
         currency_id: "",
+        creator_id: "",
         country_id: "",
-        risk_rating: "",
-        maxrange: "",
+        manager_id: "",
+        startdate: "",
+        risk: "",
+        Range: "",
       },
       Productvalue: [],
-      Productoptions: [],
+      Productoptions: [
+        { name: "Equity", id: "1" },
+        { name: "BOnd", id: "2" },
+      ],
       Currencyvalue: [],
-      Currencyoptions: [],
+      Currencyoptions: [{ name: "Rupee", id: "1" }],
       Riskvalue: [],
       Riskoptions: [
         { name: "1", id: "1" },
@@ -175,50 +175,16 @@ export default {
         { name: "5", id: "5" },
       ],
       Countryvalue: [],
-      Countryoptions: [],
+      Countryoptions: [
+        { name: "India", id: "1" },
+        { name: "UK", id: "2" },
+        { name: "US", id: "2" },
+      ],
     };
   },
   methods: {
-    gotoeditblog(value) {
-      console.log(value, "value");
-      this.form.product_id = value.product_id;
-      this.form.currency_id = value.currency_id;
-      this.form.risk_rating = value.risk_rating;
-      this.form.user_id = this.users.id;
-      this.form.status = 1;
-      this.form.maxrange = value.maxrange;
-
-      axios.post("/api/createpreferred", this.form).then((res) => {
-        const Toast = Swal.mixin({
-          toast: true,
-          position: "top-end",
-          showConfirmButton: false,
-          timer: 3000,
-          timerProgressBar: true,
-          didOpen: (toast) => {
-            toast.addEventListener("mouseenter", Swal.stopTimer);
-            toast.addEventListener("mouseleave", Swal.resumeTimer);
-          },
-        });
-        Toast.fire({
-          icon: "success",
-          title: "created in successfully",
-        });
-
-        this.Productvalue = this.Productoptions.find(
-          (option) => option.id == value.product_id
-        );
-        this.Currencyvalue = this.Currencyoptions.find(
-          (option) => option.id == value.currency_id
-        );
-        this.Riskvalue = this.Riskoptions.find(
-          (option) => option.id == value.risk_rating
-        );
-        this.form.maxrange = value.maxrange;
-        console.log(this.Riskvalue);
-        console.log(this.form, "this.form", this.Riskvalue);
-        this.getprefreeddetail(this.users.id);
-      });
+    gotoeditblog(id) {
+      this.$router.push(`/view/${id}`);
     },
     getuserdetail(id) {
       var form = {
@@ -232,16 +198,14 @@ export default {
       });
     },
     getblogs() {
-      var form = {
-        user_id: this.users.id,
-      };
-      axios.post("/api/getallpreferred", form).then((res) => {
+      this.form.manager_id = this.users.id;
+      this.form.assigned_user = this.user.id;
+      console.log(this.form, this.user);
+      axios.post("/api/getassignedall", this.form).then((res) => {
         if (res.status == 200) {
           this.ideas = res.data.data;
           console.log(this.ideas);
         }
-
-        this.form;
       });
     },
     gotoeditblog1() {
@@ -252,31 +216,6 @@ export default {
           this.Countryoptions = res.data.data["country"];
           this.Regionoptions = res.data.data["regions"];
         }
-      });
-    },
-    save() {
-      this.form.product_id = this.Productvalue.id;
-      this.form.currency_id = this.Currencyvalue.id;
-      this.form.risk_rating = this.Riskvalue.id;
-      this.form.user_id = this.users.id;
-      console.log(this.form, "this.form", this.Riskvalue);
-
-      axios.post("/api/createpreferred", this.form).then((res) => {
-        const Toast = Swal.mixin({
-          toast: true,
-          position: "top-end",
-          showConfirmButton: false,
-          timer: 3000,
-          timerProgressBar: true,
-          didOpen: (toast) => {
-            toast.addEventListener("mouseenter", Swal.stopTimer);
-            toast.addEventListener("mouseleave", Swal.resumeTimer);
-          },
-        });
-        Toast.fire({
-          icon: "success",
-          title: "created in successfully",
-        });
       });
     },
     getprefreeddetail(id) {
@@ -293,23 +232,36 @@ export default {
           this.Currencyvalue = this.Currencyoptions.find(
             (option) => option.id == this.ideas.currency_id
           );
+          this.Regionvalue = this.Regionoptions.find(
+            (option) => option.id == this.ideas.region_id
+          );
+          this.Countryvalue = this.Countryoptions.find(
+            (option) => option.id == this.ideas.country_id
+          );
           this.Riskvalue = this.Riskoptions.find(
             (option) => option.id == this.ideas.risk_rating
           );
-          this.form.maxrange = this.ideas.maxrange;
           console.log(this.Riskvalue);
         }
       });
+    },
+  },
+  computed: {
+    avatarUrl() {
+      const type =
+        this.imagestype[Math.floor(Math.random() * this.imagestype.length)];
+      const baseUrl = `https://api.dicebear.com/6.x/big-smile/svg?seed=${type}&backgroundColor=c0aede&backgroundType=gradientLinear&flip=true`;
+
+      return baseUrl;
     },
   },
   mounted() {
     const f = localStorage.getItem("user");
     this.users = JSON.parse(f);
     this.itemId = this.$route.params.id;
+    this.getuserdetail(this.itemId);
+    this.getprefreeddetail(this.itemId);
     this.gotoeditblog1();
-
-    this.getprefreeddetail(this.users.id);
-    this.getblogs();
   },
 };
 </script>
@@ -397,14 +349,14 @@ export default {
   vertical-align: middle;
 }
 .fsf button {
-    font-family: 'Poppins';
-    border: none;
-    padding: 5px 25px;
-    font-weight: 600;
-    padding-bottom: 3px;
-    background: #913175;
-    color: #ffffff;
-    border-radius: 5px;
+  font-family: "Poppins";
+  border: none;
+  padding: 5px 25px;
+  font-weight: 600;
+  padding-bottom: 3px;
+  background: #913175;
+  color: #ffffff;
+  border-radius: 5px;
 }
 .details td {
   color: #394b55;
