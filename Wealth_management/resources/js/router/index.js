@@ -48,7 +48,6 @@ const routes =[
     {
         path:'/creatorprofile',
         component:Profileblog,
-        meta: { requiresAuth: true, requiresCreator: true },
         name:'creatorprofile'
     },
     {
