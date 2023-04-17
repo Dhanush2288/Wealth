@@ -5,9 +5,14 @@
     </div>
     <!-- Page Content -->
     <div style="margin-left: 17%">
-      <topnav></topnav>
+      <div class="topnav">
+        <div class="profilee">
+          <img class="as" src="image\1606902272profile.jpeg" alt="" />
+          <h5 class="h5sd">Hi Dhanush kodi</h5>
+        </div>
+      </div>
       <div class="blogcre">
-        <h1>View Blog</h1>
+        <h1>Assign Blog</h1>
         <div class="blog">
           <form class="uploadsign" id="file-form">
             <div class="form-floating mb-3">
@@ -157,67 +162,38 @@
             </div>
           </form>
           <div>
-            <button class="btn btn-dark m-3" @click="po()">Proceed</button>
-            <button class="btn btn-dark m-3" @click="po()">Cancel</button>
+            <button class="btn btn-dark m-3" @click="po()">Assign</button>
           </div>
         </div>
       </div>
     </div>
-    <div class="message" v-bind:class="{ openmessage: showcomment }">
-      <div class="topme">
-        <p class="messagep">Comments</p>
-        <div class="messagei" @click="opencomment()">
-          <font-awesome-icon class="pod" :icon="['fas', 'close']" />
-        </div>
-      </div>
-      <div class="messagecon">
-        <div class="messagecon2" id="polic">
-          <div
-            class="chat-container"
-
-          >
-            <div class="chat-bubble"  v-for="(value, index) in this.messages"
-            v-bind:key="index" v-bind:class="{ sent: value.user_id==this.users.id }">
-              <p class="message1">{{ value.body }}</p>
-              <p class="date">Sent on   {{value.created_at}}  </p>
-            </div>
-
-          </div>
-        </div>
-        <div class="messagecon1">
-          <input type="text" class="messageinpt" placeholder="Send Comment" v-model="chat" />
-          <button class="btn btn-secondary bth" @click="send()">
-            <font-awesome-icon :icon="['fas', 'paper-plane']" />
-          </button>
-        </div>
-      </div>
-    </div>
+    <custom-modal
+      @message-sent="handleMessage"
+      ref="customModal"
+    ></custom-modal>
   </div>
 </template>
-          <script>
+        <script>
 import Select from "datatables.net-select";
 import Multiselect from "vue-multiselect";
 import VueDatePicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
 import Swal from "sweetalert2";
 import $ from "jquery";
-import Nav from "../reuseable/clientnav.vue";
-import topnav from "../reuseable/topnav.vue";
+import CustomModal from "./modalrm.vue";
+import Nav from "../reuseable/rmnav.vue";
+
 export default {
   components: {
     Multiselect,
     VueDatePicker,
+    CustomModal,
     Nav,
-    topnav,
   },
   data() {
     return {
-      chat:'',
-      users: null,
       ideas: null,
-      messages: [],
       itemId: null,
-      showcomment: false,
       form: {
         title: "",
         abstract: "",
@@ -233,11 +209,23 @@ export default {
         { name: "BOnd", id: "2" },
       ],
       Currencyvalue: [],
-      Currencyoptions: [ ],
+      Currencyoptions: [{ name: "Rupee", id: "1" }],
       Riskvalue: [],
-      Riskoptions: [],
+      Riskoptions: [
+        { name: "1", id: "1" },
+        { name: "2", id: "2" },
+        { name: "3", id: "3" },
+        { name: "4", id: "4" },
+        { name: "5", id: "5" },
+      ],
       Regionvalue: [],
-      Regionoptions: [],
+      Regionoptions: [
+        { name: "TN", id: "1" },
+        { name: "AP", id: "2" },
+        { name: "KL", id: "3" },
+        { name: "VD", id: "4" },
+        { name: "5", id: "5" },
+      ],
       Countryvalue: [],
       Countryoptions: [
         { name: "India", id: "1" },
@@ -247,85 +235,14 @@ export default {
     };
   },
   methods: {
-    opencomment(){
-        this.showcomment = !this.showcomment;
-        var form = {
-        blog_id: this.itemId,
-        user_id: this.users.id,
-       };
-      axios.post("/api/updateseen", form).then((res) => {
-        if (res.status == 200) {
-             this.getcomments(this.itemId)
-        }
-      });
-    },
     po() {
       this.$refs.customModal.showModal();
     },
     handleMessage(message) {
-      console.log(message, "message-sent");
-      var form = {
-        manager_id: this.users.id,
-        blog_id: this.itemId,
-        assigned_user: message,
-      };
+        console.log(message,"message-sent");
 
-      axios.post("/api/createassigned", form).then((res) => {
-        const Toast = Swal.mixin({
-          toast: true,
-          position: "top-end",
-          showConfirmButton: false,
-          timer: 3000,
-          timerProgressBar: true,
-          didOpen: (toast) => {
-            toast.addEventListener("mouseenter", Swal.stopTimer);
-            toast.addEventListener("mouseleave", Swal.resumeTimer);
-          },
-        });
-
-        if (res.status == 200) {
-          Toast.fire({
-            icon: "success",
-            title: "assigned to a client successfully",
-          });
-          this.$router.push("/manager");
-        } else {
-          console.log("sdfsd");
-          Toast.fire({
-            icon: "Danger",
-            title: "Something went wrong",
-          });
-        }
-      });
     },
-    send(){
-        var form = {
-        blog_id: this.itemId,
-        user_id: this.users.id,
-        body:this.chat
-      };
-      axios.post("/api/comments", form).then((res) => {
-        if (res.status == 200) {
-            this.chat=""
-            this.getcomments(this.itemId)
-        }
-      });
-    },
-    getcomments(id) {
-      var form = {
-        blog_id: id,
-        // user_id: this.users.id,
-      };
-      axios.post("/api/getcomments", form).then((res) => {
-        if (res.status == 200) {
-          this.messages = res.data.data;
-          var div = document.getElementById('polic');
-          div.scrollTop = div.scrollHeight;
-
-        }
-      });
-    },
-    Savepublish() {
+    Savepublish( ) {
       console.log($);
       const utcDate1 = new Date(this.form.expiry_at)
         .toISOString()
@@ -409,26 +326,15 @@ export default {
   mounted() {
     this.itemId = this.$route.params.id;
     this.getblogdetail(this.itemId);
-    const f = localStorage.getItem("user");
-    this.users = JSON.parse(f);
-    this.gotoeditblog();
-    this.getcomments(this.itemId);
+    this.gotoeditblog()
   },
 };
 </script>
-          <style scoped>
+        <style scoped>
 .muldiv {
   width: 45%;
 }
-.topme {
-  height: 50px;
-}
-.bth {
-  background: black;
-  border: none;
-  color: white;
-  margin: 3px;
-}
+
 .nav-links {
   margin-top: 10vh;
   display: block;
@@ -436,47 +342,6 @@ export default {
   justify-content: space-between;
   z-index: 1 !important;
 }
-.chat-container {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  overflow-y: auto;
-  padding: 10px;
-  background-color: #f5f5f5;
-}
-
-.chat-bubble {
-  display: flex;
-  flex-direction: column;
-  max-width: 80%;
-  margin-bottom: 10px;
-  padding: 10px;
-  border-radius: 5px;
-  font-size: 16px;
-  background-color: #fff;
-  box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
-}
-
-.chat-bubble.sent {
-  align-self: flex-end;
-  background-color: #dcf8c6;
-}
-
-.chat-bubble.seen {
-  color: #bbb;
-}
-
-.chat-bubble .message1 {
-  margin: 0;
-}
-
-.chat-bubble .date {
-  margin: 0;
-  font-size: 12px;
-  color: #888;
-  text-align: right;
-}
-
 .close .nav-links {
   transition: all 0.3s ease-in-out;
   padding-left: 2rem !important;
@@ -491,62 +356,7 @@ export default {
   color: rgb(0, 0, 0);
   font-weight: 700;
 }
-.message {
-  width: 250px;
-  height: 50px;
-  background: yellowgreen;
-  position: fixed;
-  bottom: 5px;
-  right: 10px;
-  border-radius: 8px;
-}
-.messagecon {
-  /* width: 400px; */
-  height: 400px;
-  background: white;
-}
-.messagecon2 {
-  height: 75%;
-}
-.messagecon1 {
-  background: yellowgreen;
-  height: 25%;
-}
-.messageinpt {
-  padding: 5px;
-  border: 2px solid #ccc;
-  border-radius: 5px;
-  font-size: 16px;
-  box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
-  width: 80%;
-  /* margin: auto; */
-  margin: 6px;
-  margin-right: 0px;
-  outline: none;
 
-}
-.messagep {
-  /* margin: 0px; */
-  display: inline-flex;
-  margin-top: 11px;
-  margin-left: 20px;
-  font-size: 21px;
-  font-weight: 900;
-}
-.messagei {
-  display: inline;
-  float: revert;
-  margin-top: 16px;
-  position: absolute;
-  right: 9px;
-}
-.pod {
-  font-size: 24px;
-}
-.openmessage {
-  width: 400px;
-  height: 400px;
-}
 .nav-links a i {
   font-size: 28px;
   text-decoration: none;
@@ -627,4 +437,4 @@ export default {
   margin-top: 30px;
 }
 </style>
-          <style src="vue-multiselect/dist/vue-multiselect.css"></style>
+        <style src="vue-multiselect/dist/vue-multiselect.css"></style>

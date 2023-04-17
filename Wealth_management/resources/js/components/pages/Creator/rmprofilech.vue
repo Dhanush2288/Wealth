@@ -11,8 +11,8 @@
           class="bgforprofile"
         />
         <div class="doctorname">
-          <h4 class="">{{ this.users.name }}</h4>
-          <p>{{ this.users.email }}</p>
+          <h4 class="">{{ this.user.name }}</h4>
+          <p>{{ this.user.email }}</p>
         </div>
       </div>
       <div class="container">
@@ -25,11 +25,12 @@
               <multiselect
                 v-model="Productvalue"
                 :options="Productoptions"
-                :multiple="false"
+                :multiple="true"
                 :preserve-search="true"
                 placeholder="Products"
                 label="name"
                 track-by="name"
+                disabled
               >
               </multiselect>
             </div>
@@ -38,11 +39,12 @@
               <multiselect
                 v-model="Currencyvalue"
                 :options="Currencyoptions"
-                :multiple="false"
+                :multiple="true"
                 :preserve-search="true"
                 placeholder="Currency"
                 label="name"
                 track-by="name"
+                disabled
               >
               </multiselect>
             </div>
@@ -52,10 +54,11 @@
               <multiselect
                 v-model="Riskvalue"
                 :options="Riskoptions"
-                :multiple="false"
+                :multiple="true"
                 placeholder="Risk"
                 label="name"
                 track-by="name"
+                disabled
               >
               </multiselect>
             </div>
@@ -67,61 +70,34 @@
                   :min="0"
                   :max="10000"
                   :interval="10"
+                  disabled
                 ></vue-slider>
               </div>
-            </div>
-            <div class="muldiv">
-              <button class="btn btn-dark w-100 mt-4" @click="save()">
-                Save
-              </button>
             </div>
           </div>
         </div>
         <div class="tablerey shadow p-3 mb-5 bg-white rounded">
           <div class="Options">
-            <h1 class="Health">Past Prefreed Records</h1>
+            <h1 class="Health">Past Records</h1>
           </div>
           <div class="fsf">
             <table class="table">
-                <thead>
-                    <th>
-                        Product name
-                    </th>
-                    <th>
-                        Currency name
-                    </th>
-                    <th>
-                        Risk rating
-                    </th>
-                    <th>
-                        Max range
-                    </th>
-                    <th>
-
-                    </th>
-                </thead>
               <tr
                 v-for="(value, index) in ideas"
                 class="bor-f"
                 v-bind:key="index"
               >
-                <td >{{ value.product_name }}</td>
+                <td style="width: 15%">{{ value.title }}</td>
+                <td style="padding: 5px">{{ value.product_name }}</td>
+                <td>{{ value.country_name }}</td>
                 <td>{{ value.currency_name }}</td>
 
+                <td>{{ value.risk }}</td>
                 <td>
-                  {{ value.risk_rating ? value.risk_rating + " Rating" : " " }}
-                </td>
-                <td>{{ value.maxrange }}</td>
-
-                <td>
-                  <button class="btn bop" @click="gotoeditblog(value)">
-                    Set Prefreed
+                  <button class="btn bop" @click="gotoeditblog(value.id)">
+                    View
                   </button>
-                  <!-- <button class="btn bop  " style="margin-left: 5px;" @click="gotoeditblog(value)">
-                    Delete
-                  </button> -->
                 </td>
-
               </tr>
             </table>
           </div>
@@ -130,7 +106,7 @@
     </div>
   </div>
 </template>
-    <script>
+  <script>
 import Nav from "../reuseable/nav.vue";
 import Multiselect from "vue-multiselect";
 import VueDatePicker from "@vuepic/vue-datepicker";
@@ -158,14 +134,20 @@ export default {
         product_id: "",
         region_id: "",
         currency_id: "",
+        creator_id: "",
         country_id: "",
-        risk_rating: "",
-        maxrange: "",
+        manager_id: "",
+        startdate: "",
+        risk: "",
+        Range: "",
       },
       Productvalue: [],
-      Productoptions: [],
+      Productoptions: [
+        { name: "Equity", id: "1" },
+        { name: "BOnd", id: "2" },
+      ],
       Currencyvalue: [],
-      Currencyoptions: [],
+      Currencyoptions: [{ name: "Rupee", id: "1" }],
       Riskvalue: [],
       Riskoptions: [
         { name: "1", id: "1" },
@@ -175,50 +157,16 @@ export default {
         { name: "5", id: "5" },
       ],
       Countryvalue: [],
-      Countryoptions: [],
+      Countryoptions: [
+        { name: "India", id: "1" },
+        { name: "UK", id: "2" },
+        { name: "US", id: "2" },
+      ],
     };
   },
   methods: {
-    gotoeditblog(value) {
-      console.log(value, "value");
-      this.form.product_id = value.product_id;
-      this.form.currency_id = value.currency_id;
-      this.form.risk_rating = value.risk_rating;
-      this.form.user_id = this.users.id;
-      this.form.status = 1;
-      this.form.maxrange = value.maxrange;
-
-      axios.post("/api/createpreferred", this.form).then((res) => {
-        const Toast = Swal.mixin({
-          toast: true,
-          position: "top-end",
-          showConfirmButton: false,
-          timer: 3000,
-          timerProgressBar: true,
-          didOpen: (toast) => {
-            toast.addEventListener("mouseenter", Swal.stopTimer);
-            toast.addEventListener("mouseleave", Swal.resumeTimer);
-          },
-        });
-        Toast.fire({
-          icon: "success",
-          title: "created in successfully",
-        });
-
-        this.Productvalue = this.Productoptions.find(
-          (option) => option.id == value.product_id
-        );
-        this.Currencyvalue = this.Currencyoptions.find(
-          (option) => option.id == value.currency_id
-        );
-        this.Riskvalue = this.Riskoptions.find(
-          (option) => option.id == value.risk_rating
-        );
-        this.form.maxrange = value.maxrange;
-        console.log(this.Riskvalue);
-        console.log(this.form, "this.form", this.Riskvalue);
-        this.getprefreeddetail(this.users.id);
-      });
+    gotoeditblog(id) {
+      this.$router.push(`/view/${id}`);
     },
     getuserdetail(id) {
       var form = {
@@ -232,10 +180,10 @@ export default {
       });
     },
     getblogs() {
-      var form = {
-        user_id: this.users.id,
-      };
-      axios.post("/api/getallpreferred", form).then((res) => {
+      this.form.creator_id = this.users.id;
+      this.form.manager_id = this.user.id;
+      console.log(this.form, this.user);
+      axios.post("/api/getblogs", this.form).then((res) => {
         if (res.status == 200) {
           this.ideas = res.data.data;
           console.log(this.ideas);
@@ -254,31 +202,6 @@ export default {
         }
       });
     },
-    save() {
-      this.form.product_id = this.Productvalue.id;
-      this.form.currency_id = this.Currencyvalue.id;
-      this.form.risk_rating = this.Riskvalue.id;
-      this.form.user_id = this.users.id;
-      console.log(this.form, "this.form", this.Riskvalue);
-
-      axios.post("/api/createpreferred", this.form).then((res) => {
-        const Toast = Swal.mixin({
-          toast: true,
-          position: "top-end",
-          showConfirmButton: false,
-          timer: 3000,
-          timerProgressBar: true,
-          didOpen: (toast) => {
-            toast.addEventListener("mouseenter", Swal.stopTimer);
-            toast.addEventListener("mouseleave", Swal.resumeTimer);
-          },
-        });
-        Toast.fire({
-          icon: "success",
-          title: "created in successfully",
-        });
-      });
-    },
     getprefreeddetail(id) {
       var form = {
         user_id: id,
@@ -293,10 +216,15 @@ export default {
           this.Currencyvalue = this.Currencyoptions.find(
             (option) => option.id == this.ideas.currency_id
           );
+          this.Regionvalue = this.Regionoptions.find(
+            (option) => option.id == this.ideas.region_id
+          );
+          this.Countryvalue = this.Countryoptions.find(
+            (option) => option.id == this.ideas.country_id
+          );
           this.Riskvalue = this.Riskoptions.find(
             (option) => option.id == this.ideas.risk_rating
           );
-          this.form.maxrange = this.ideas.maxrange;
           console.log(this.Riskvalue);
         }
       });
@@ -306,14 +234,13 @@ export default {
     const f = localStorage.getItem("user");
     this.users = JSON.parse(f);
     this.itemId = this.$route.params.id;
+    this.getuserdetail(this.itemId);
+    this.getprefreeddetail(this.itemId)
     this.gotoeditblog1();
-
-    this.getprefreeddetail(this.users.id);
-    this.getblogs();
-  },
+   },
 };
 </script>
-    <style scoped>
+  <style scoped>
 .doctorname {
   display: block;
   position: relative;

@@ -14,8 +14,8 @@
       </div>
       <div class="col-lg-7 pagelogin">
         <button
-        @click="$router.push('/register')"
-              type="submit"
+          @click="$router.push('/register')"
+          type="submit"
           class="btn btn-lg btn-dark btnsign"
         >
           Sign up
@@ -37,10 +37,9 @@
                 id="floatingInputemail"
                 placeholder="name@example.com"
                 v-model="form.email"
+                :class="{ 'is-invalid': !validEmail }"
               />
-              <div class="invalid-feedback">
-                Please enter a message in the textarea.
-              </div>
+              <div class="invalid-feedback">Please enter a correct email.</div>
             </div>
 
             <div class="mb-3">
@@ -53,7 +52,9 @@
                 id="floatingPassword "
                 placeholder="Password"
                 v-model="form.password"
+                :class="{ 'is-invalid': !validPassword }"
               />
+              <div class="invalid-feedback">Please enter Password.</div>
             </div>
 
             <button
@@ -70,6 +71,8 @@
   </div>
 </template>
 <script>
+import Swal from "sweetalert2";
+
 export default {
   data() {
     return {
@@ -78,41 +81,69 @@ export default {
         password: "",
       },
       errors: [],
+      imagestype: ["Aneka", "Angel", "Scooter", "Charlie", "Lucy", "Cuddles"],
+      formSaved: false,
     };
+  },
+  computed: {
+    validEmail() {
+      return !this.formSaved || this.form.email.length !== 0;
+    },
+    validPassword() {
+      return !this.formSaved || this.form.password.length >= 6;
+    },
+
+    formIsValid() {
+      return this.validEmail && this.validPassword;
+    },
   },
   methods: {
     saveForm() {
-      axios
-        .post("/api/login", this.form)
-        .then((res) => {
-          if (res.data.success) {
-            this.$store.dispatch("login", {
-              user: res.data.user[0],
-            });
-            localStorage.setItem("user", JSON.stringify(res.data.user[0]));
+      this.formSaved = true;
+      if (this.formIsValid) {
+        axios
+          .post("/api/login", this.form)
+          .then((res) => {
+            if (res.data.success) {
+              this.$store.dispatch("login", {
+                user: res.data.user[0],
+              });
+              const randomIndex = Math.floor(
+                Math.random() * this.imagestype.length
+              );
+              const randomElement = this.imagestype[randomIndex];
+              localStorage.setItem("user", JSON.stringify(res.data.user[0]));
+              localStorage.setItem("avatar", randomElement);
 
-            var user = res.data.user[0];
-            var redirectTo = {};
-            console.log(user.usertype);
-            if (user.usertype === "Manager") {
-              redirectTo = { name: "manager" };
-            } else if (user.usertype === "admin") {
-              redirectTo = { name: "admin" };
-            } else if (user.usertype === "creator") {
-              redirectTo = { name: "creator" };
-            } else if (user.usertype === "client") {
-              redirectTo = { name: "client" };
+              localStorage.setItem(
+                "token",
+                JSON.stringify(res.data.user["token"])
+              );
+              console.log(res.data.user["token"]);
+              var user = res.data.user[0];
+              var redirectTo = {};
+              console.log(user.usertype);
+              if (user.usertype === "Manager") {
+                redirectTo = { name: "manager" };
+              } else if (user.usertype === "Admin") {
+                redirectTo = { name: "admin" };
+              } else if (user.usertype === "Creator") {
+                redirectTo = { name: "creator" };
+              } else if (user.usertype === "Client") {
+                redirectTo = { name: "Client" };
+              }
+              console.log(redirectTo);
+
+              this.$router.push(redirectTo).catch((err) => {});
+            } else {
+              Swal.fire("User not found", "Danger");
             }
-            console.log(redirectTo);
-
-            this.$router.push(redirectTo).catch((err) => {});
-          }
-          console.log(this.$store.getters.isAuthenticated);
-        })
-        .catch((error) => {
-          console.log(error, "error");
-          this.errors = error.response.data.errors;
-        });
+          })
+          .catch((error) => {
+            console.log(error, "error");
+            this.errors = error.response.data.errors;
+          });
+      }
     },
   },
 };
