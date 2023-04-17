@@ -9,8 +9,10 @@ window._ = _;
 
 import axios from 'axios';
 window.axios = axios;
-
-// window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+// const config = {
+//     headers: { Authorization: `Bearer ${token}` }
+// };
+window.axios.defaults.headers.common['X-Authorization-With'] = 'XMLHttpRequest';
 
 /**
  * Echo exposes an expressive API for subscribing to channels and listening

@@ -1,42 +1,7 @@
 <template>
   <div>
     <div class="w3-sidebar sidenav w3-bar-block" style="width: 17%">
-      <div class="logo">LOGO</div>
-
-      <nav class="navabar">
-        <ul class="nav-links">
-          <li class="dashboard">
-            <a @click="$router.push('/creator')">
-              <font-awesome-icon icon="fa-solid fa-house" />
-              <span class="textspan"> Dashboard </span>
-            </a>
-          </li>
-          <li class="dashboard active1">
-            <a @click="$router.push('/createblog')">
-              <font-awesome-icon icon="fa-solid fa-building" />
-              <span class="textspan"> Blogs </span>
-            </a>
-          </li>
-          <li class="dashboard">
-            <a>
-              <font-awesome-icon icon="fa-solid fa-users" />
-              <span class="textspan"> Rms profiles </span>
-            </a>
-          </li>
-          <li class="dashboard">
-            <a>
-              <font-awesome-icon icon=" fa-solid fa-user" />
-              <span class="textspan"> Profile </span>
-            </a>
-          </li>
-          <!-- <li class="dashboard">
-                <a href="http://localhost:4000/contact">
-                  <i class="fa fa-phone"></i>
-                  <span class="textspan"> Contact us </span></a
-                >
-              </li> -->
-        </ul>
-      </nav>
+      <Nav></Nav>
     </div>
     <!-- Page Content -->
     <div style="margin-left: 17%">
@@ -47,15 +12,15 @@
         </div>
       </div>
       <div class="blogcre">
-        <h1>Create Blog</h1>
+        <h1>View Blog</h1>
         <div class="blog">
           <form class="uploadsign" id="file-form">
             <div class="form-floating mb-3">
               <input
-                type="email"
+                type="text"
                 class="form-control"
                 id="floatingInput"
-                placeholder="name@example.com"
+                placeholder="Title"
                 v-model="form.title"
               />
               <label for="floatingInput">Title</label>
@@ -76,7 +41,7 @@
                 placeholder="Leave a comment here"
                 id="floatingTextarea"
                 style="height: 200px"
-                v-model="form.Content"
+                v-model="form.content"
               ></textarea>
               <label for="floatingInput">Content</label>
             </div>
@@ -91,9 +56,9 @@
                 <label class="typo__label">Product Tags</label>
                 <div class="oi">
                   <multiselect
+
                     v-model="Productvalue"
                     :options="Productoptions"
-                    :multiple="true"
                     :preserve-search="true"
                     placeholder="Products"
                     label="name"
@@ -107,7 +72,6 @@
                 <multiselect
                   v-model="Currencyvalue"
                   :options="Currencyoptions"
-                  :multiple="true"
                   :preserve-search="true"
                   placeholder="Currency"
                   label="name"
@@ -128,7 +92,6 @@
                 <multiselect
                   v-model="Countryvalue"
                   :options="Countryoptions"
-                  :multiple="true"
                   :preserve-search="true"
                   placeholder="Country"
                   label="name"
@@ -141,7 +104,6 @@
                 <multiselect
                   v-model="Regionvalue"
                   :options="Regionoptions"
-                  :multiple="true"
                   :preserve-search="true"
                   placeholder="Currency"
                   label="name"
@@ -163,86 +125,210 @@
                   v-model="Riskvalue"
                   :options="Riskoptions"
                   :preserve-search="true"
-                  placeholder="risk"
+                  placeholder="Risk"
                   label="name"
                   track-by="name"
                 >
                 </multiselect>
               </div>
-              <div class="muldiv">
-                <label class="typo__label">expiry date</label>
-                <VueDatePicker
-                  v-model="form.expiry_at"
-                  placeholder="Start Typing ..."
-                  text-input
+              <div class="form-floating mb-3 muldiv">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="floatingInput"
+                  placeholder="Max value"
+                  v-model="form.maxrange"
                 />
+                <label for="floatingInput">Max value</label>
               </div>
+            </div>
+            <div class="muldiv">
+              <label class="typo__label">expiry date</label>
+              <VueDatePicker
+                v-model="form.expiry_at"
+                placeholder="Start Typing ..."
+                text-input
+              />
             </div>
           </form>
           <div>
-            <button class="btn btn-dark m-3" @click="Savepublish(true)">
-              Publish
-            </button>
-            <button class="btn btn-dark m-3" @click="Savepublish(false)">
-              Save Draft
-            </button>
+
           </div>
         </div>
       </div>
     </div>
+    <custom-modal
+      @message-sent="handleMessage"
+      ref="customModal"
+    ></custom-modal>
   </div>
 </template>
-    <script>
+      <script>
 import Select from "datatables.net-select";
 import Multiselect from "vue-multiselect";
 import VueDatePicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
+import Swal from "sweetalert2";
+import $ from "jquery";
+import CustomModal from "./as.vue";
+import Nav from "../reuseable/nav.vue";
 
 export default {
   components: {
     Multiselect,
     VueDatePicker,
+    CustomModal,
+    Nav,
   },
   data() {
     return {
+      ideas: null,
+      itemId: null,
       form: {
         title: "",
         abstract: "",
         risk: "",
         creator_id: "",
-        Content: "",
+        content: "",
         expiry_at: null,
+        maxrange: null,
       },
-      Productvalue: [],
-      Productoptions: [],
+      Productvalue: null,
+      Productoptions: [
+        { name: "Equity", id: "1" },
+        { name: "BOnd", id: "2" },
+      ],
       Currencyvalue: [],
-      Currencyoptions: [ ],
+      Currencyoptions: [{ name: "Rupee", id: "1" }],
       Riskvalue: [],
-      Riskoptions: [],
+      Riskoptions: [
+        { name: "1", id: "1" },
+        { name: "2", id: "2" },
+        { name: "3", id: "3" },
+        { name: "4", id: "4" },
+        { name: "5", id: "5" },
+      ],
       Regionvalue: [],
-      Regionoptions: [],
+      Regionoptions: [
+        { name: "TN", id: "1" },
+        { name: "AP", id: "2" },
+        { name: "KL", id: "3" },
+        { name: "VD", id: "4" },
+        { name: "5", id: "5" },
+      ],
       Countryvalue: [],
-      Countryoptions: [],
+      Countryoptions: [
+        { name: "India", id: "1" },
+        { name: "UK", id: "2" },
+        { name: "US", id: "2" },
+      ],
     };
   },
   methods: {
+    po() {
+        console.log(this.Productvalue);
+    //   this.$refs.customModal.showModal();
+    },
+    handleMessage(message) {
+      const utcDate1 = new Date(this.form.expiry_at)
+        .toISOString()
+        .replace("T", " ")
+        .replace("Z", "");
+      console.log(this.Productvalue);
+      this.form.product_id = this.Productvalue.id;
+      this.form.currency_id = this.Currencyvalue.id;
+      this.form.region_id = this.Regionvalue.id;
+      this.form.country_id = this.Countryvalue.id;
+      this.form.risk = this.Riskvalue.name;
+      this.form.creator_id = 3;
+      this.form.manager_id = message;
+      this.form.expiry_at = utcDate1;
+      this.form.status = 1;
+
+      console.log(this.form);
+      axios.post("/api/createblog", this.form).then((res) => {
+        this.form;
+        console.log(this.form);
+        const Toast = Swal.mixin({
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          didOpen: (toast) => {
+            toast.addEventListener("mouseenter", Swal.stopTimer);
+            toast.addEventListener("mouseleave", Swal.resumeTimer);
+          },
+        });
+        this.$router.push("/creator");
+
+        Toast.fire({
+          icon: "success",
+          title: "created in successfully",
+        });
+      });
+    },
     Savepublish(a) {
-      const utcDate1 = new Date(this.form.expiry_at);
-      utcDate1.toISOString();
-      this.form.product_id = JSON.stringify(this.Productvalue.map((a) => a.id));
-      this.form.currency_id = JSON.stringify(
-        this.Currencyvalue.map((a) => a.id)
-      );
-      this.form.region_id = JSON.stringify(this.Countryvalue.map((a) => a.id));
-      this.form.country_id = JSON.stringify(this.Regionvalue.map((a) => a.id));
+      console.log($);
+      const utcDate1 = new Date(this.form.expiry_at)
+        .toISOString()
+        .replace("T", " ")
+        .replace("Z", "");
+      console.log(this.Productvalue);
+      this.form.product_id = this.Productvalue.id;
+      this.form.currency_id = this.Currencyvalue.id;
+      this.form.region_id = this.Regionvalue.id;
+      this.form.country_id = this.Countryvalue.id;
       this.form.risk = this.Riskvalue.name;
       this.form.creator_id = 3;
       this.form.expiry_at = utcDate1;
+      console.log(this.form);
       axios.post("/api/createblog", this.form).then((res) => {
+        this.form;
         console.log(this.form);
+        const Toast = Swal.mixin({
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          didOpen: (toast) => {
+            toast.addEventListener("mouseenter", Swal.stopTimer);
+            toast.addEventListener("mouseleave", Swal.resumeTimer);
+          },
+        });
+
+        Toast.fire({
+          icon: "success",
+          title: "created in successfully",
+        });
       });
     },
-    gotoeditblog() {
+    getblogdetail(id) {
+      var form = {
+        blog_id: id,
+      };
+      axios.post("/api/getblogs", form).then((res) => {
+        if (res.status == 200) {
+          this.ideas = res.data.data[0];
+          this.form.title = this.ideas.title;
+          this.form.abstract = this.ideas.abstract;
+          this.form.risk = this.ideas.risk;
+          this.form.creator_id = this.ideas.creator_id;
+          this.form.content = this.ideas.content;
+          this.form.expiry_at = this.ideas.expiry_at;
+          this.form.maxrange = this.ideas.maxrange;
+          this.Productvalue = this.Productoptions.find(option => option.id == this.ideas.product_id);
+          this.Currencyvalue  =  this.Currencyoptions.find(option => option.id == this.ideas.currency_id);
+          this.Regionvalue  = this.Regionoptions.find(option => option.id == this.ideas.region_id );
+          this.Countryvalue  =   this.Countryoptions.find(option => option.id == this.ideas.country_id);
+          this.Riskvalue = this.Riskoptions.find(option => option.id == this.ideas.risk)
+          console.log(this.Riskvalue);
+
+        }
+      });
+    },
+    gotoeditblog1() {
       axios.post("/api/getall").then((res) => {
         if (res.status == 200) {
           this.Productoptions = res.data.data["project_types"];
@@ -252,18 +338,19 @@ export default {
         }
       });
     },
-    mounted() {
-      gotoeditblog();
-    },
+  },
+  mounted() {
+    this.itemId = this.$route.params.id;
+    this.getblogdetail(this.itemId);
+    this.gotoeditblog1()
   },
 };
 </script>
-    <style scoped>
+      <style scoped>
 .muldiv {
   width: 45%;
 }
-.oi {
-}
+
 .nav-links {
   margin-top: 10vh;
   display: block;
@@ -366,4 +453,4 @@ export default {
   margin-top: 30px;
 }
 </style>
-    <style src="vue-multiselect/dist/vue-multiselect.css"></style>
+      <style src="vue-multiselect/dist/vue-multiselect.css"></style>
