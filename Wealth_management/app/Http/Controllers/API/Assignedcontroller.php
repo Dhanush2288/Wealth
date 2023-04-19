@@ -79,6 +79,7 @@ class Assignedcontroller extends Controller
             if ($request->input("assigned_user")) {
                 $where[] = ['assigned.assigned_user', '=', $request->input("assigned_user")];
             }
+            $where[] = ['blog.isdeleted', '=', 0];
 
             $blog = DB::table('assigned')
                 ->leftjoin('blog', 'blog.id', '=', 'assigned.blog_id')
