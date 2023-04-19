@@ -191,11 +191,10 @@ export default {
       },
       Productvalue: null,
       Productoptions: [
-        { name: "Equity", id: "1" },
-        { name: "BOnd", id: "2" },
+        
       ],
       Currencyvalue: [],
-      Currencyoptions: [{ name: "Rupee", id: "1" }],
+      Currencyoptions: [ ],
       Riskvalue: [],
       Riskoptions: [
         { name: "1", id: "1" },
@@ -206,17 +205,11 @@ export default {
       ],
       Regionvalue: [],
       Regionoptions: [
-        { name: "TN", id: "1" },
-        { name: "AP", id: "2" },
-        { name: "KL", id: "3" },
-        { name: "VD", id: "4" },
-        { name: "5", id: "5" },
+       
       ],
       Countryvalue: [],
       Countryoptions: [
-        { name: "India", id: "1" },
-        { name: "UK", id: "2" },
-        { name: "US", id: "2" },
+        
       ],
     };
   },
@@ -337,8 +330,8 @@ export default {
   },
   mounted() {
     this.itemId = this.$route.params.id;
-    this.getblogdetail(this.itemId);
     this.gotoeditblog1()
+    this.getblogdetail(this.itemId);
   },
 };
 </script>
