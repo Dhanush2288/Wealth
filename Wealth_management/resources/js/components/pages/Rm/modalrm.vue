@@ -21,9 +21,9 @@
             <th>Image</th>
             <th>Name</th>
             <th>Email</th>
-            <th>Prefreed Product</th>
-            <th>Prefreed Currency</th>
-            <th>Prefreed Risk</th>
+            <th>Preferred Product</th>
+            <th>Preferred Currency</th>
+            <th>Preferred Risk</th>
             <th>Max investment</th>
 
             <th>Actions</th>

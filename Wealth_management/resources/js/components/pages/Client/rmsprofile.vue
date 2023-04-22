@@ -17,9 +17,9 @@
                   <th scope="col">#</th>
                   <th scope="col" style="width: 15%">Name</th>
                   <th scope="col">Email</th>
-                  <th scope="col">Prefreed Product</th>
-                  <th scope="col">Prefreed currency</th>
-                  <th scope="col">Prefreed Risk</th>
+                  <th scope="col">Preferred Product</th>
+                  <th scope="col">Preferred currency</th>
+                  <th scope="col">Preferred Risk</th>
                   <th scope="col">MAx limit</th>
                   <th scope="col">Assigned</th>
                   <th scope="col" style="width: 5 %">Date</th>

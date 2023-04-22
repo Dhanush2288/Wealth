@@ -17,7 +17,7 @@
         </div>
         <div class="container">
           <div>
-            <h5>Prefreed investment</h5>
+            <h5>Preferred investment</h5>
 
             <div class="Clearr">
               <div class="muldiv">
@@ -79,7 +79,7 @@
           </div>
           <div class="tablerey shadow p-3 mb-5 bg-white rounded">
             <div class="Options">
-              <h1 class="Health">Past Prefreed Records</h1>
+              <h1 class="Health">Past Preferred Records</h1>
             </div>
             <div class="fsf">
               <table class="table">
@@ -115,7 +115,7 @@
 
                   <td>
                     <button class="btn bop" @click="gotoeditblog(value)">
-                      Set Prefreed
+                      Set Preferred
                     </button>
                     <!-- <button class="btn bop  " style="margin-left: 5px;" @click="gotoeditblog(value)">
                       Delete
@@ -226,7 +226,7 @@
           this.form.maxrange = value.maxrange;
           console.log(this.Riskvalue);
           console.log(this.form, "this.form", this.Riskvalue);
-          this.getprefreeddetail(this.users.id);
+          this.getPreferreddetail(this.users.id);
         });
       },
       getuserdetail(id) {
@@ -288,7 +288,7 @@
           });
         });
       },
-      getprefreeddetail(id) {
+      getPreferreddetail(id) {
         var form = {
           user_id: id,
         };
@@ -317,7 +317,7 @@
       this.itemId = this.$route.params.id;
       this.gotoeditblog1();
 
-      this.getprefreeddetail(this.users.id);
+      this.getPreferreddetail(this.users.id);
       this.getblogs();
       this.avatar=localStorage.getItem("avatar")
 

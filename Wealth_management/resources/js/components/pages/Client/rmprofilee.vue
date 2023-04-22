@@ -17,7 +17,7 @@
         </div>
         <div class="container">
           <div>
-            <h5>Prefreed investment</h5>
+            <h5>Preferred investment</h5>
 
             <div class="Clearr">
               <div class="muldiv">
@@ -201,7 +201,7 @@
           }
         });
       },
-      getprefreeddetail(id) {
+      getPreferreddetail(id) {
         var form = {
           user_id: id,
         };
@@ -234,7 +234,7 @@
       this.users = JSON.parse(f);
       this.itemId = this.$route.params.id;
       this.getuserdetail(this.itemId);
-      this.getprefreeddetail(this.itemId)
+      this.getPreferreddetail(this.itemId)
       this.gotoeditblog1();
      },
   };

@@ -7,7 +7,7 @@
       <div class="container contain">
         <img :src="asset('image/cover.png')" class="bgforcover" />
         <img
-          :src="asset('image/1606902272profile.jpeg')"
+          :src="avatarUrl"
           class="bgforprofile"
         />
         <div class="doctorname">
@@ -17,7 +17,7 @@
       </div>
       <div class="container">
         <div>
-          <h5>Prefreed investment</h5>
+          <h5>Preferred investment</h5>
 
           <div class="Clearr">
             <div class="muldiv">
@@ -79,7 +79,7 @@
         </div>
         <div class="tablerey shadow p-3 mb-5 bg-white rounded">
           <div class="Options">
-            <h1 class="Health">Past Prefreed Records</h1>
+            <h1 class="Health">Past Preferred Records</h1>
           </div>
           <div class="fsf">
             <table class="table">
@@ -115,7 +115,7 @@
 
                 <td>
                   <button class="btn bop" @click="gotoeditblog(value)">
-                    Set Prefreed
+                    Set Preferred
                   </button>
                   <!-- <button class="btn bop  " style="margin-left: 5px;" @click="gotoeditblog(value)">
                     Delete
@@ -154,6 +154,7 @@ export default {
       value: 50,
       itemId: null,
       ideas: [],
+      avatar:null,
       form: {
         product_id: "",
         region_id: "",
@@ -177,6 +178,15 @@ export default {
       Countryvalue: [],
       Countryoptions: [],
     };
+  },
+  computed: {
+    avatarUrl() {
+        const type = this.avatar;
+       const baseUrl = `https://api.dicebear.com/6.x/big-smile/svg?seed=${type}&backgroundColor=c0aede&backgroundType=gradientLinear&flip=true`;
+
+      return baseUrl;
+
+    },
   },
   methods: {
     gotoeditblog(value) {
@@ -217,7 +227,7 @@ export default {
         this.form.maxrange = value.maxrange;
         console.log(this.Riskvalue);
         console.log(this.form, "this.form", this.Riskvalue);
-        this.getprefreeddetail(this.users.id);
+        this.getPreferreddetail(this.users.id);
       });
     },
     getuserdetail(id) {
@@ -279,7 +289,7 @@ export default {
         });
       });
     },
-    getprefreeddetail(id) {
+    getPreferreddetail(id) {
       var form = {
         user_id: id,
       };
@@ -308,8 +318,10 @@ export default {
     this.itemId = this.$route.params.id;
     this.gotoeditblog1();
 
-    this.getprefreeddetail(this.users.id);
+    this.getPreferreddetail(this.users.id);
     this.getblogs();
+    this.avatar=localStorage.getItem("avatar")
+
   },
 };
 </script>
